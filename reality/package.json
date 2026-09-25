@@ -1,0 +1,33 @@
+{
+  "name": "reality",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "REALITY - a continuous real-time scientific visualization from the human eye to the structure of the universe",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run ledger && vite build && vite build --mode single && node scripts/finish-build.mjs",
+    "preview": "vite preview",
+    "ledger": "node --experimental-strip-types --no-warnings scripts/gen-science.ts",
+    "typecheck": "tsc --noEmit -p .",
+    "test": "vitest run",
+    "verify": "node scripts/verify.mjs",
+    "render": "node scripts/render.mjs",
+    "render:share": "node scripts/render.mjs --share-only",
+    "render:test": "node scripts/render.mjs --test-clips"
+  },
+  "dependencies": {
+    "inter-ui": "^4.1.1",
+    "katex": "^0.18.9",
+    "three": "^0.186.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.2",
+    "@types/three": "^0.186.0",
+    "playwright-core": "^1.63.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.1",
+    "vite-plugin-singlefile": "^2.3.3",
+    "vitest": "^5.0.2"
+  }
+}
