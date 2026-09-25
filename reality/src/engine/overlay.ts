@@ -210,6 +210,12 @@ export class Overlay {
       const lines = wrap(ctx, c.text, maxW);
       const blockH = lines.length * lineH;
       const y0 = base - blockH + lineH * 0.8;
+      // soft dark backdrop so captions stay legible over bright frames
+      const bw = Math.max(...lines.map((l) => ctx.measureText(l).width)) + 60 * u;
+      const grd = ctx.createLinearGradient(left - 40 * u, 0, left + bw, 0);
+      grd.addColorStop(0, `rgba(0,0,0,${0.42 * a})`); grd.addColorStop(0.75, `rgba(0,0,0,${0.3 * a})`); grd.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = grd;
+      ctx.fillRect(left - 40 * u, y0 - fs * 1.4, bw + 40 * u, blockH + fs * 1.3);
       const lvl = claimById(c.ref)?.level ?? 'ESTABLISHED';
       // epistemic tick
       ctx.globalAlpha = a;

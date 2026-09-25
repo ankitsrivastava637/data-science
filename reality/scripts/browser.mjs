@@ -9,7 +9,7 @@ export function chromiumPath() {
 }
 
 export async function launch({ software = process.env.REALITY_SWIFTSHADER === '1', offline = false } = {}) {
-  const args = ['--ignore-gpu-blocklist', '--enable-gpu-rasterization', '--disable-renderer-backgrounding', '--disable-background-timer-throttling', '--autoplay-policy=no-user-gesture-required'];
+  const args = ['--disable-background-networking', '--disable-component-update', '--disable-sync', '--no-first-run', '--disable-default-apps', '--disable-domain-reliability', '--disable-client-side-phishing-detection', '--ignore-gpu-blocklist', '--enable-gpu-rasterization', '--disable-renderer-backgrounding', '--disable-background-timer-throttling', '--autoplay-policy=no-user-gesture-required'];
   if (software) args.push('--use-angle=swiftshader', '--enable-unsafe-swiftshader');
   else args.push('--use-angle=default', '--enable-unsafe-swiftshader');
   const browser = await chromium.launch({ executablePath: chromiumPath(), args, headless: true });

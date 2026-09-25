@@ -56,6 +56,7 @@ export type ExtraJob = { key: string; job: string; args: (s: Partial<Shared>) =>
 export const EXTRA_JOBS: ExtraJob[] = [
   { key: 'dna', job: 'dna', args: (s) => [s.seed] },
   { key: 'density', job: 'density', args: (s) => [s.seed] },
+  { key: 'zeta', job: 'zeta', args: () => [] },
 ];
 
 export async function precompute(seed: number, particleScale: number, onProgress: (done: number, total: number, label: string) => void): Promise<Shared> {

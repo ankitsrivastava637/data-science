@@ -12,7 +12,7 @@ export interface LatexBitmap {
 
 export async function rasterizeLatex(latex: string, px: number, color = '#ece6da'): Promise<LatexBitmap> {
   const html = katex.renderToString('\\displaystyle ' + latex, { output: 'html', throwOnError: true, displayMode: false });
-  const W = Math.ceil(px * 34), H = Math.ceil(px * 6);
+  const W = Math.ceil(px * 34), H = Math.ceil(px * 11);
   const pad = Math.ceil(px * 1.2);
   const svg =
     `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">` +

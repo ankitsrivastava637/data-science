@@ -12,7 +12,7 @@ page.on('pageerror', (e) => logs.push('[pageerror] ' + e.message));
 for (const t of ts) {
   const t0 = Date.now();
   await page.goto(`${base}?still=1&t=${t}&tier=high`, { waitUntil: 'load' });
-  await page.waitForFunction(() => window.__stillDone === true || (window.__errors && window.__errors.length > 0), null, { timeout: 180000 });
+  await page.waitForFunction(() => window.__stillDone === true || (window.__errors && window.__errors.length > 0), null, { timeout: 90000 });
   const errs = await page.evaluate(() => window.__errors);
   await page.screenshot({ path: `${outdir}/t${String(t).padStart(6, '0')}.png` });
   console.log(`t=${t}  ${(Date.now() - t0) / 1000}s  errors=${errs.length ? errs.join(' | ') : 'none'}`);
