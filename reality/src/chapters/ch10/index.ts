@@ -227,7 +227,7 @@ function pointCloud(pos: Float32Array, col: Float32Array, size: number, maxPx = 
 
 /** barred spiral particle model (kpc): bulge, bar, exponential disk, two major arms from the bar
  *  ends plus two weaker ones, young blue stars and HII knots concentrated in the arms. Illustrative. */
-function makeGalaxy(n: number, seed: number, scale = 1) {
+export function makeGalaxy(n: number, seed: number, scale = 1) {
   const rng = new Rng(seed, 2101);
   const pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
   const pitch = 0.23, R0 = 3.6; // arms start near the bar ends

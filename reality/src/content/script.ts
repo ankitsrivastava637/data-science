@@ -163,6 +163,7 @@ cap(11, 14.7, 20.0, 'C11.4', 'No theory of quantum gravity is confirmed by exper
 cap(11, 20.3, 24.8, 'C11.6', 'Extra spatial dimensions have not been observed. If they exist, they are small or hidden.');
 eq(11, 1.0, 5.2, 'E11.1');
 eq(11, 20.8, 24.8, 'E11.2');
+cap(12, 20.8, 25.8, 'C12.1', 'Everything you have seen reached you as light, absorbed by a mosaic of cells.');
 eq(10, 32.0, 39.0, 'E10.2');
 
 export const CAPTIONS: Caption[] = CAP.sort((a, b) => a.t0 - b.t0);

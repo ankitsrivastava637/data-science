@@ -3,6 +3,8 @@ import ComputeWorker from './compute.worker.ts?worker&inline';
 import type { MosaicJob, OrbitalSet, Detections } from './jobs';
 import type { SlitResult } from '../math/schrodinger';
 import { makeCell, type CellModel } from '../content/cellModel';
+import { rasterizeLatex } from './katexRaster';
+import { equationById } from '../content/ledger';
 import earthDayUrl from '../assets/earth/blue-marble.jpg';
 import earthNightUrl from '../assets/earth/night-lights.jpg';
 
@@ -25,6 +27,20 @@ export interface Shared {
   detections: Detections;
   extra: Record<string, any>;
   images: Record<string, HTMLImageElement>;
+  /** ink pixels of the Synthesis equation stack: x, y pairs in raster pixels */
+  glyphs: { w: number; h: number; ink: Float32Array };
+}
+
+/** Equations whose glyphs the Synthesis particles pass through (all shown earlier in the film). */
+export const SYNTHESIS_EQUATIONS = ['E2.2', 'E7.1', 'E9.4'];
+async function sampleGlyphs() {
+  const latex = '\\begin{gathered}' + SYNTHESIS_EQUATIONS.map((id) => equationById(id)!.latex).join('\\\\[10pt]') + '\\end{gathered}';
+  const bmp = await rasterizeLatex(latex, 64);
+  const g = bmp.canvas.getContext('2d', { willReadFrequently: true })!;
+  const d = g.getImageData(0, 0, bmp.width, bmp.height).data;
+  const ink: number[] = [];
+  for (let y = 0; y < bmp.height; y++) for (let x = 0; x < bmp.width; x++) if (d[(y * bmp.width + x) * 4 + 3] > 140) ink.push(x, y);
+  return { w: bmp.width, h: bmp.height, ink: new Float32Array(ink) };
 }
 
 class Pool {
@@ -78,10 +94,11 @@ export function setWebResolution(n: number) { webN = n; }
 export async function precompute(seed: number, particleScale: number, onProgress: (done: number, total: number, label: string) => void): Promise<Shared> {
   const hc = (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) || 4;
   const pool = new Pool(Math.max(2, Math.min(4, hc - 1)));
-  const total = 5 + EXTRA_JOBS.length;
+  const total = 6 + EXTRA_JOBS.length;
   let done = 0;
   const tick = (label: string) => onProgress(++done, total, label);
   const shared: Partial<Shared> = { seed, cell: makeCell(seed), extra: {}, images: {} };
+  const glyphP = sampleGlyphs().then((g) => { shared.glyphs = g; tick('equation glyphs'); });
   const imgP = Promise.all(Object.entries(IMAGES).map(async ([k, u]) => { shared.images![k] = await loadImage(u); })).then(() => tick('images'));
   const slitP = pool.run<SlitResult>('doubleSlit').then((r) => { tick('Schrödinger evolution'); shared.slit = r; return r; });
   const mosaicP = pool.run<MosaicJob>('mosaic', seed).then((r) => { tick('cone mosaic'); shared.mosaic = r; });
@@ -92,7 +109,7 @@ export async function precompute(seed: number, particleScale: number, onProgress
     shared.extra![j.key] = r;
     tick(j.key);
   }));
-  await Promise.all([slitP, mosaicP, orbP, detP, extraP, imgP]);
+  await Promise.all([slitP, mosaicP, orbP, detP, extraP, imgP, glyphP]);
   pool.terminate();
   return shared as Shared;
 }

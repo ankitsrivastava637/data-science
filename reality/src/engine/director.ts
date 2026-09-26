@@ -34,7 +34,7 @@ export function planAt(t: number): Plan {
     const next = CHAPTERS[i + 1];
     const dnext = next ? (next.transitionIn.type === 'cut' ? 0 : next.transitionIn.duration) : END_FADE;
     const inStart = c.start - din / 2, inEnd = c.start + din / 2;
-    const outStart = c.end - dnext / 2;
+    const outStart = next ? c.end - dnext / 2 : c.end - dnext; // the last chapter is fully dark when the end card begins
     if (t >= inStart && t < inEnd && din > 0) {
       const p = (t - inStart) / din;
       if (i === 0) return { a: { meta: c, weight: 1 }, b: null, progress: 0, noisy: false, fade: smooth(p) };
