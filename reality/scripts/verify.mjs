@@ -152,6 +152,30 @@ if (run('live')) {
   report.freeCamera = { viewChanged: !shotA.equals(shotB), before: 'shots/zz_freecam_before.png', after: 'shots/zz_freecam_after.png' };
   console.log(`free camera: view changed ${!shotA.equals(shotB)}`);
   if (shotA.equals(shotB)) fail('free camera did not change the view');
+  // controls: resume, seek (the audio clock must follow), mute, real-time recording
+  await page.keyboard.press('c'); await page.keyboard.press('Space');
+  await page.waitForTimeout(2500);
+  const s1 = await page.evaluate(() => window.__live.t());
+  await page.keyboard.press('ArrowRight');
+  await page.waitForTimeout(3000);
+  const s2 = await page.evaluate(() => ({ t: window.__live.t(), at: window.__live.audioT() }));
+  await page.keyboard.press('m');
+  const muted = await page.evaluate(() => window.__live.audio());
+  await page.keyboard.press('m');
+  const unmuted = await page.evaluate(() => window.__live.audio());
+  const dl = page.waitForEvent('download', { timeout: 90000 }).catch(() => null);
+  const recSel = 'button[aria-label="Record a real-time video of the canvas"]';
+  await page.evaluate((q) => document.querySelector(q).click(), recSel);
+  await page.waitForTimeout(5000);
+  await page.evaluate((q) => document.querySelector(q).click(), recSel);
+  const d = await dl;
+  let rec = null;
+  if (d) { const pth = await d.path(); rec = { file: d.suggestedFilename(), bytes: pth ? statSync(pth).size : 0 }; }
+  report.controls = { seek: { before: s1, after: s2.t, audioClock: s2.at, jumped: +(s2.t - s1).toFixed(2), audioFollows: s2.at != null && Math.abs(s2.t - s2.at) < 0.25 }, mute: { muted, unmuted }, recording: rec };
+  console.log(`controls: seek jumped ${(s2.t - s1).toFixed(2)} s (audio ${s2.at?.toFixed(2)}), mute "${muted}" → "${unmuted}", recording ${rec ? rec.file + ' ' + rec.bytes + ' bytes' : 'none'}`);
+  if (!(s2.t - s1 > 9.5) || !report.controls.seek.audioFollows) fail('seek did not move picture and audio together');
+  if (!/muted/.test(muted) || /muted/.test(unmuted)) fail('mute toggle not reflected in audio state');
+  if (!rec || rec.bytes < 10000) fail('real-time recording produced no file');
   await page.close();
 }
 
@@ -190,6 +214,7 @@ const md = [
   '', '## file:// with networking disabled', '', '```json', JSON.stringify(report.offline, null, 2), '```',
   '', '## Low tier, live mode', '', '```json', JSON.stringify(report.lowTier, null, 2), '```',
   '', '## Free camera', '', '```json', JSON.stringify(report.freeCamera, null, 2), '```',
+  '', '## Live controls', '', '```json', JSON.stringify(report.controls ?? {}, null, 2), '```',
   '', '## Audio', '', '```json', JSON.stringify(report.audio, null, 2), '```',
   '', `## Result: ${report.failures.length ? 'FAILURES' : 'all checks passed'}`, '', ...report.failures.map((f) => `- ${f}`), '',
 ];
