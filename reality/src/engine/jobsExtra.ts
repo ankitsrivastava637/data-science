@@ -1,6 +1,7 @@
 // Jobs for chapters beyond the first three helpers in jobs.ts.
 import { makeBDNA, densityGrid } from '../math/dna';
 import { zetaZeros, zeta } from '../math/numbertheory';
+import { zeldovich } from '../math/zeldovich';
 
 export const extraJobs: Record<string, (...a: any[]) => unknown> = {
   dna: (seed: number) => makeBDNA(24, seed),
@@ -18,4 +19,5 @@ export const extraJobs: Record<string, (...a: any[]) => unknown> = {
     for (let i = 0; i < n; i++) { const z = zeta([0.5, i * 0.02]); curve[i * 2] = z[0]; curve[i * 2 + 1] = z[1]; }
     return { zeros, curve };
   },
+  web: (n: number, seed: number) => zeldovich(n, 500, seed),
 };

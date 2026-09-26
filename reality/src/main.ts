@@ -8,7 +8,7 @@ import { Director } from './engine/director';
 import { Overlay } from './engine/overlay';
 import { PostChain, type PostParams } from './engine/post';
 import { Adaptive, detectTier, makeQuality, type Quality, type Tier } from './engine/quality';
-import { precompute, type Shared } from './engine/shared';
+import { precompute, setWebResolution, type Shared } from './engine/shared';
 import { emptyOutput, type EngineContext, type Frame } from './engine/types';
 import { UI } from './engine/ui';
 import { freeCam } from './engine/choreo';
@@ -83,6 +83,7 @@ async function boot() {
   const clock = new Clock();
 
   let shared: Shared;
+  setWebResolution(quality.tier === 'low' ? 48 : 64);
   try {
     shared = await precompute(SEED, quality.particles, (d, t, l) => ui?.setProgress(d, t, l));
   } catch (e) {

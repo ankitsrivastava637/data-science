@@ -146,5 +146,17 @@ cap(9, 78.0, 84.0, 'C9.17', 'Any consistent formal system strong enough for arit
 cap(9, 84.3, 90.5, 'C9.18', 'Every continuous symmetry of a physical law implies a conserved quantity (Noether, 1918).');
 eq(9, 84.3, 90.5, 'E9.8', 0.95, 0.075);
 
+// ── 10 · Cosmos ───────────────────────────────────────────────────────────
+cap(10, 8.4, 14.4, 'C10.1', 'Earth: mean radius 6,371 km. Coastlines from Natural Earth data; the land close-up and the clouds are illustrative.');
+cap(10, 14.6, 19.8, 'C10.1', 'The Moon orbits about 384,400 km away. One astronomical unit, the Earth–Sun distance, is 149,597,870,700 m.');
+cap(10, 20.0, 25.6, 'C10.2', 'The nearest star, Proxima Centauri, is 1.30 parsecs — 4.2 light-years — away. Other stars here are placed procedurally at a realistic density.');
+cap(10, 25.8, 31.6, 'C10.3', 'The Sun lies about 8.2 kiloparsecs from the centre of the Milky Way, a barred spiral (illustrative model). Andromeda is about 765 kiloparsecs away.');
+cap(10, 31.8, 38.8, 'C10.6', 'The cosmic web grew by gravity from tiny initial fluctuations (Zel’dovich approximation — first-order, not a full simulation).');
+cap(10, 39.0, 45.0, 'C10.5', 'Looking farther means looking earlier: light from distant galaxies left them long ago.');
+cap(10, 45.2, 52.6, 'C10.8', 'Three different distances: light-travel time (13.8 billion years), the Hubble radius (14.5 billion light-years) and the particle horizon (46 billion light-years, comoving).');
+cap(10, 52.8, 59.6, 'C10.9', 'The observable universe is a horizon — the limit of what light has had time to bring us — not a wall, and not the edge of the universe.');
+eq(10, 45.2, 59.6, 'E10.1');
+eq(10, 32.0, 39.0, 'E10.2');
+
 export const CAPTIONS: Caption[] = CAP.sort((a, b) => a.t0 - b.t0);
 export const EQ_CUES: EqCue[] = EQ.sort((a, b) => a.t0 - b.t0);

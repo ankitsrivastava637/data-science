@@ -3,6 +3,18 @@ import ComputeWorker from './compute.worker.ts?worker&inline';
 import type { MosaicJob, OrbitalSet, Detections } from './jobs';
 import type { SlitResult } from '../math/schrodinger';
 import { makeCell, type CellModel } from '../content/cellModel';
+import earthDayUrl from '../assets/earth/blue-marble.jpg';
+import earthNightUrl from '../assets/earth/night-lights.jpg';
+
+/** Bundled images (inlined as data URIs in the single-file build), decoded before playback. */
+const IMAGES: Record<string, string> = { earthDay: earthDayUrl, earthNight: earthNightUrl };
+async function loadImage(url: string): Promise<HTMLImageElement> {
+  const img = new Image();
+  img.decoding = 'async';
+  img.src = url;
+  await img.decode();
+  return img;
+}
 
 export interface Shared {
   seed: number;
@@ -12,6 +24,7 @@ export interface Shared {
   slit: SlitResult;
   detections: Detections;
   extra: Record<string, any>;
+  images: Record<string, HTMLImageElement>;
 }
 
 class Pool {
@@ -57,15 +70,19 @@ export const EXTRA_JOBS: ExtraJob[] = [
   { key: 'dna', job: 'dna', args: (s) => [s.seed] },
   { key: 'density', job: 'density', args: (s) => [s.seed] },
   { key: 'zeta', job: 'zeta', args: () => [] },
+  { key: 'web', job: 'web', args: (s) => [webN, s.seed] },
 ];
+let webN = 64;
+export function setWebResolution(n: number) { webN = n; }
 
 export async function precompute(seed: number, particleScale: number, onProgress: (done: number, total: number, label: string) => void): Promise<Shared> {
   const hc = (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) || 4;
   const pool = new Pool(Math.max(2, Math.min(4, hc - 1)));
-  const total = 4 + EXTRA_JOBS.length;
+  const total = 5 + EXTRA_JOBS.length;
   let done = 0;
   const tick = (label: string) => onProgress(++done, total, label);
-  const shared: Partial<Shared> = { seed, cell: makeCell(seed), extra: {} };
+  const shared: Partial<Shared> = { seed, cell: makeCell(seed), extra: {}, images: {} };
+  const imgP = Promise.all(Object.entries(IMAGES).map(async ([k, u]) => { shared.images![k] = await loadImage(u); })).then(() => tick('images'));
   const slitP = pool.run<SlitResult>('doubleSlit').then((r) => { tick('Schrödinger evolution'); shared.slit = r; return r; });
   const mosaicP = pool.run<MosaicJob>('mosaic', seed).then((r) => { tick('cone mosaic'); shared.mosaic = r; });
   const orbP = pool.run<OrbitalSet[]>('orbitals', seed, Math.round(60000 * Math.min(1.5, particleScale))).then((r) => { tick('orbital samples'); shared.orbitals = r; });
@@ -75,7 +92,7 @@ export async function precompute(seed: number, particleScale: number, onProgress
     shared.extra![j.key] = r;
     tick(j.key);
   }));
-  await Promise.all([slitP, mosaicP, orbP, detP, extraP]);
+  await Promise.all([slitP, mosaicP, orbP, detP, extraP, imgP]);
   pool.terminate();
   return shared as Shared;
 }
