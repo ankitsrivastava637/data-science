@@ -156,6 +156,13 @@ cap(10, 39.0, 45.0, 'C10.5', 'Looking farther means looking earlier: light from 
 cap(10, 45.2, 52.6, 'C10.8', 'Three different distances: light-travel time (13.8 billion years), the Hubble radius (14.5 billion light-years) and the particle horizon (46 billion light-years, comoving).');
 cap(10, 52.8, 59.6, 'C10.9', 'The observable universe is a horizon — the limit of what light has had time to bring us — not a wall, and not the edge of the universe.');
 eq(10, 45.2, 59.6, 'E10.1');
+cap(11, 0.4, 5.0, 'C11.1', 'Inflation — a brief exponential expansion before the hot Big Bang — is a leading hypothesis, not yet confirmed.');
+cap(11, 5.3, 9.8, 'C11.2', 'Eternal inflation and bubble universes are speculative extensions of it.');
+cap(11, 10.0, 14.5, 'C11.3', 'String theory may allow an enormous “landscape” of vacua — estimates run to about 10⁵⁰⁰.');
+cap(11, 14.7, 20.0, 'C11.4', 'No theory of quantum gravity is confirmed by experiment. Candidates include strings and loop quantum gravity; spacetime itself might emerge from entanglement.');
+cap(11, 20.3, 24.8, 'C11.6', 'Extra spatial dimensions have not been observed. If they exist, they are small or hidden.');
+eq(11, 1.0, 5.2, 'E11.1');
+eq(11, 20.8, 24.8, 'E11.2');
 eq(10, 32.0, 39.0, 'E10.2');
 
 export const CAPTIONS: Caption[] = CAP.sort((a, b) => a.t0 - b.t0);

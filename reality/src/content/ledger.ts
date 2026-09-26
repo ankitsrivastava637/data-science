@@ -240,6 +240,8 @@ export const EQUATIONS: Equation[] = [
   { id: 'E9.8', chapter: 9, latex: '\\frac{\\partial L}{\\partial \\theta}=0\\;\\Longrightarrow\\;\\frac{d}{dt}\\,\\frac{\\partial L}{\\partial\\dot\\theta}=0', meaning: 'Rotational symmetry ⇒ conserved angular momentum.', claim: 'C9.18' },
   { id: 'E10.1', chapter: 10, latex: 'H(z)=H_0\\sqrt{\\Omega_m(1+z)^3+\\Omega_\\Lambda}', meaning: 'Flat ΛCDM expansion rate (radiation included in the code).', claim: 'C10.7' },
   { id: 'E10.2', chapter: 10, latex: '\\mathbf x(\\mathbf q,t)=\\mathbf q-D(t)\\,\\nabla_{\\mathbf q}\\Phi(\\mathbf q)', meaning: "Zel'dovich approximation.", claim: 'C10.6' },
+  { id: 'E11.1', chapter: 11, latex: 'a(t)\\propto e^{Ht}', meaning: 'Near-exponential expansion during inflation (H nearly constant).', claim: 'C11.1' },
+  { id: 'E11.2', chapter: 11, latex: 'z_1^{5}+z_2^{5}=1', meaning: 'The complex curve (a real 2D surface) in Hanson’s picture of the quintic Calabi–Yau.', claim: 'C11.6' },
 ];
 
 export function claimById(id: string): Claim | undefined {

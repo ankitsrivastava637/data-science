@@ -9,6 +9,7 @@ import ch7 from './ch7';
 import ch8 from './ch8';
 import ch9 from './ch9';
 import ch10 from './ch10';
+import ch11 from './ch11';
 
 export const FACTORIES: Record<number, ChapterFactory> = {
   1: ch1,
@@ -21,4 +22,5 @@ export const FACTORIES: Record<number, ChapterFactory> = {
   8: ch8,
   9: ch9,
   10: ch10,
+  11: ch11,
 };
