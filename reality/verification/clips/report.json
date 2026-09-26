@@ -1,0 +1,200 @@
+[
+  {
+    "clip": "quantum",
+    "from": 150,
+    "file": "/home/user/data-science/reality/render-work/clips/clips/quantum.mp4",
+    "checks": {
+      "frames": [
+        300,
+        300,
+        true
+      ],
+      "duration": [
+        10,
+        10,
+        true
+      ],
+      "A/V start offset (s)": [
+        0,
+        "±0.0333",
+        true
+      ],
+      "A/V duration diff (s)": [
+        0,
+        "±0.0333",
+        true
+      ],
+      "colour tags": [
+        "bt709/bt709/bt709/tv",
+        "bt709/bt709/bt709/tv",
+        true
+      ],
+      "codec / profile / pix_fmt": [
+        "h264/High/yuv420p",
+        "h264/High/yuv420p",
+        true
+      ],
+      "audio": [
+        "aac 48000 Hz 2 ch 272 kb/s",
+        "aac 48000 Hz 2 ch",
+        true
+      ],
+      "full decode (ffmpeg -xerror)": [
+        "clean",
+        "clean",
+        true
+      ]
+    },
+    "play": {
+      "status": "NOT VERIFIED (this Chromium build has no H.264/AAC decoder)",
+      "direct": {
+        "canPlayType": "",
+        "loaded": false,
+        "advanced": false,
+        "w": 0,
+        "h": 0,
+        "err": 4
+      },
+      "harnessAv1Transcode": {
+        "canPlayType": "probably",
+        "loaded": true,
+        "advanced": true,
+        "w": 640,
+        "h": 360,
+        "err": null
+      }
+    }
+  },
+  {
+    "clip": "gravity",
+    "from": 600,
+    "file": "/home/user/data-science/reality/render-work/clips/clips/gravity.mp4",
+    "checks": {
+      "frames": [
+        300,
+        300,
+        true
+      ],
+      "duration": [
+        10,
+        10,
+        true
+      ],
+      "A/V start offset (s)": [
+        0,
+        "±0.0333",
+        true
+      ],
+      "A/V duration diff (s)": [
+        0,
+        "±0.0333",
+        true
+      ],
+      "colour tags": [
+        "bt709/bt709/bt709/tv",
+        "bt709/bt709/bt709/tv",
+        true
+      ],
+      "codec / profile / pix_fmt": [
+        "h264/High/yuv420p",
+        "h264/High/yuv420p",
+        true
+      ],
+      "audio": [
+        "aac 48000 Hz 2 ch 342 kb/s",
+        "aac 48000 Hz 2 ch",
+        true
+      ],
+      "full decode (ffmpeg -xerror)": [
+        "clean",
+        "clean",
+        true
+      ]
+    },
+    "play": {
+      "status": "NOT VERIFIED (this Chromium build has no H.264/AAC decoder)",
+      "direct": {
+        "canPlayType": "",
+        "loaded": false,
+        "advanced": false,
+        "w": 0,
+        "h": 0,
+        "err": 4
+      },
+      "harnessAv1Transcode": {
+        "canPlayType": "probably",
+        "loaded": true,
+        "advanced": true,
+        "w": 640,
+        "h": 360,
+        "err": null
+      }
+    }
+  },
+  {
+    "clip": "synthesis",
+    "from": 830,
+    "file": "/home/user/data-science/reality/render-work/clips/clips/synthesis.mp4",
+    "checks": {
+      "frames": [
+        300,
+        300,
+        true
+      ],
+      "duration": [
+        10,
+        10,
+        true
+      ],
+      "A/V start offset (s)": [
+        0,
+        "±0.0333",
+        true
+      ],
+      "A/V duration diff (s)": [
+        0,
+        "±0.0333",
+        true
+      ],
+      "colour tags": [
+        "bt709/bt709/bt709/tv",
+        "bt709/bt709/bt709/tv",
+        true
+      ],
+      "codec / profile / pix_fmt": [
+        "h264/High/yuv420p",
+        "h264/High/yuv420p",
+        true
+      ],
+      "audio": [
+        "aac 48000 Hz 2 ch 298 kb/s",
+        "aac 48000 Hz 2 ch",
+        true
+      ],
+      "full decode (ffmpeg -xerror)": [
+        "clean",
+        "clean",
+        true
+      ]
+    },
+    "play": {
+      "status": "NOT VERIFIED (this Chromium build has no H.264/AAC decoder)",
+      "direct": {
+        "canPlayType": "",
+        "loaded": false,
+        "advanced": false,
+        "w": 0,
+        "h": 0,
+        "err": 4
+      },
+      "harnessAv1Transcode": {
+        "canPlayType": "probably",
+        "loaded": true,
+        "advanced": true,
+        "w": 640,
+        "h": 360,
+        "err": null
+      }
+    }
+  }
+]

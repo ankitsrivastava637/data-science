@@ -1,0 +1,30 @@
+quantum (t = 150 s): verification/clips/quantum.mp4
+  PASS  frames: 300  (expected 300)
+  PASS  duration: 10  (expected 10)
+  PASS  A/V start offset (s): 0  (expected ±0.0333)
+  PASS  A/V duration diff (s): 0  (expected ±0.0333)
+  PASS  colour tags: bt709/bt709/bt709/tv  (expected bt709/bt709/bt709/tv)
+  PASS  codec / profile / pix_fmt: h264/High/yuv420p  (expected h264/High/yuv420p)
+  PASS  audio: aac 48000 Hz 2 ch 272 kb/s  (expected aac 48000 Hz 2 ch)
+  PASS  full decode (ffmpeg -xerror): clean  (expected clean)
+  N/V   <video> playback: NOT VERIFIED (this Chromium build has no H.264/AAC decoder); {"canPlayType":"probably","loaded":true,"advanced":true,"w":640,"h":360,"err":null}
+gravity (t = 600 s): verification/clips/gravity.mp4
+  PASS  frames: 300  (expected 300)
+  PASS  duration: 10  (expected 10)
+  PASS  A/V start offset (s): 0  (expected ±0.0333)
+  PASS  A/V duration diff (s): 0  (expected ±0.0333)
+  PASS  colour tags: bt709/bt709/bt709/tv  (expected bt709/bt709/bt709/tv)
+  PASS  codec / profile / pix_fmt: h264/High/yuv420p  (expected h264/High/yuv420p)
+  PASS  audio: aac 48000 Hz 2 ch 342 kb/s  (expected aac 48000 Hz 2 ch)
+  PASS  full decode (ffmpeg -xerror): clean  (expected clean)
+  N/V   <video> playback: NOT VERIFIED (this Chromium build has no H.264/AAC decoder); {"canPlayType":"probably","loaded":true,"advanced":true,"w":640,"h":360,"err":null}
+synthesis (t = 830 s): verification/clips/synthesis.mp4
+  PASS  frames: 300  (expected 300)
+  PASS  duration: 10  (expected 10)
+  PASS  A/V start offset (s): 0  (expected ±0.0333)
+  PASS  A/V duration diff (s): 0  (expected ±0.0333)
+  PASS  colour tags: bt709/bt709/bt709/tv  (expected bt709/bt709/bt709/tv)
+  PASS  codec / profile / pix_fmt: h264/High/yuv420p  (expected h264/High/yuv420p)
+  PASS  audio: aac 48000 Hz 2 ch 298 kb/s  (expected aac 48000 Hz 2 ch)
+  PASS  full decode (ffmpeg -xerror): clean  (expected clean)
+  N/V   <video> playback: NOT VERIFIED (this Chromium build has no H.264/AAC decoder); {"canPlayType":"probably","loaded":true,"advanced":true,"w":640,"h":360,"err":null}

@@ -206,22 +206,36 @@ function checkFile(file, expectFrames, expectDur) {
     'codec / profile / pix_fmt': [`${v.codec_name}/${v.profile}/${v.pix_fmt}`, 'h264/High/yuv420p', v.codec_name === 'h264' && v.profile === 'High' && v.pix_fmt === 'yuv420p'],
     audio: [a ? `${a.codec_name} ${a.sample_rate} Hz ${a.channels} ch ${Math.round(a.bit_rate / 1000)} kb/s` : 'none', 'aac 48000 Hz 2 ch', !!a && a.codec_name === 'aac' && +a.sample_rate === 48000],
   };
+  // strict full decode of both streams
+  const dec = spawnSync('ffmpeg', ['-hide_banner', '-v', 'error', '-xerror', '-i', file, '-f', 'null', '-'], { encoding: 'utf8' });
+  rows['full decode (ffmpeg -xerror)'] = [dec.status === 0 && !dec.stderr.trim() ? 'clean' : dec.stderr.trim().slice(0, 120) || 'exit ' + dec.status, 'clean', dec.status === 0 && !dec.stderr.trim()];
   return rows;
 }
-async function playsInVideoElement(file) {
+/** <video> check. Open-source Chromium builds ship without H.264/AAC decoders; then the MP4 itself cannot be
+ *  played here, so we report that honestly and also play an AV1/Opus transcode to show the element path works. */
+async function videoCheck(file) {
+  const direct = await playsInVideoElement(file, 'video/mp4; codecs="avc1.640028, mp4a.40.2"');
+  if (direct.canPlayType) return { status: direct.loaded && direct.advanced ? 'PASS' : 'FAIL', direct };
+  const av1 = file.replace(/\.mp4$/, '_av1.mp4');
+  ff(['-i', file, '-c:v', 'libsvtav1', '-preset', '10', '-crf', '40', '-pix_fmt', 'yuv420p', '-c:a', 'libopus', '-b:a', '96k', av1]);
+  const harness = await playsInVideoElement(av1, 'video/mp4; codecs="av01.0.08M.08, opus"');
+  return { status: 'NOT VERIFIED (this Chromium build has no H.264/AAC decoder)', direct, harnessAv1Transcode: harness };
+}
+async function playsInVideoElement(file, type) {
   const { browser, context } = await launch({ software: true });
   const page = await context.newPage();
   const srv = createServer((req, res) => { res.writeHead(200, { 'content-type': req.url.endsWith('.mp4') ? 'video/mp4' : 'text/html' }); if (req.url.endsWith('.mp4')) createReadStream(file).pipe(res); else res.end('<video id=v muted playsinline src="/clip.mp4"></video>'); });
   await new Promise((r) => srv.listen(0, '127.0.0.1', r));
   await page.goto(`http://127.0.0.1:${srv.address().port}/`);
-  const r = await page.evaluate(async () => {
+  const r = await page.evaluate(async (type) => {
     const v = document.getElementById('v');
-    const can = v.canPlayType('video/mp4; codecs="avc1.640028, mp4a.40.2"');
-    const ok = await new Promise((res) => { v.onloadeddata = () => res(true); v.onerror = () => res(false); setTimeout(() => res(false), 15000); });
+    const can = v.canPlayType(type);
+    // the element starts loading at parse time: the event may already have fired
+    const ok = v.readyState >= 2 ? true : await new Promise((res) => { v.onloadeddata = () => res(true); v.onerror = () => res(false); setTimeout(() => res(v.readyState >= 2), 30000); });
     let advanced = false;
-    if (ok) { try { await v.play(); await new Promise((r) => setTimeout(r, 1500)); advanced = v.currentTime > 0.2; } catch { advanced = false; } }
+    if (ok) { try { await v.play(); await new Promise((r) => setTimeout(r, 3000)); advanced = v.currentTime > 0.2; } catch { advanced = false; } }
     return { canPlayType: can, loaded: ok, advanced, w: v.videoWidth, h: v.videoHeight, err: v.error ? v.error.code : null };
-  });
+  }, type);
   await browser.close(); srv.close();
   return r;
 }
@@ -240,14 +254,14 @@ async function testClips() {
     // stills from the encoded file (first, middle, last frame)
     for (const [k, ts] of [['a', 0], ['b', 5], ['c', 9.9]]) ff(['-ss', String(ts), '-i', out, '-frames:v', '1', join(dir, `${name}_${k}.png`)]);
     const checks = checkFile(out, 10 * FPS, 10);
-    const play = await playsInVideoElement(out);
+    const play = await videoCheck(out);
     report.push({ clip: name, from: t0, file: out, checks, play });
   }
   writeFileSync(join(dir, 'report.json'), JSON.stringify(report, null, 2));
   for (const r of report) {
     console.log(`\n${r.clip} (t = ${r.from} s): ${r.file}`);
     for (const [k, [got, want, ok]] of Object.entries(r.checks)) console.log(`  ${ok ? 'PASS' : 'FAIL'}  ${k}: ${got}  (expected ${want})`);
-    console.log(`  ${r.play.loaded && r.play.advanced ? 'PASS' : 'FAIL'}  <video> playback: ${JSON.stringify(r.play)}`);
+    console.log(`  ${r.play.status.startsWith('PASS') ? 'PASS' : r.play.status.startsWith('NOT') ? 'N/V ' : 'FAIL'}  <video> playback: ${r.play.status}; ${JSON.stringify(r.play.harnessAv1Transcode ?? r.play.direct)}`);
   }
 }
 

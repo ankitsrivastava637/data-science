@@ -3,6 +3,7 @@ dist-single/
 *.log
 render-work/
 verification/*.mp4
+!verification/clips/*.mp4
 # the full-quality master exceeds GitHub's 100 MB file limit; reality_share.mp4 is committed instead
 /reality.mp4
 /reality_*.mp4
