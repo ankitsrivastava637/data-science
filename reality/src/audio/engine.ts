@@ -4,8 +4,9 @@
 // the master clock for the pictures (clock.ts), keeping picture and sound locked after seeks.
 import AudioWorker from './audio.worker.ts?worker&inline';
 import type { Shared } from '../engine/shared';
-import { buildScore, renderBlock, BLOCK_SEC, WARM_SEC, MASTER_DB, type Score, type ScoreInputs } from './score';
+import { buildScore, BLOCK_SEC, WARM_SEC, MASTER_DB, type Score, type ScoreInputs } from './score';
 import { scoreInputs } from './inputs';
+import { renderPcm24, base64 } from './offline';
 import { DURATION } from '../content/chapters';
 
 export class AudioEngine {
@@ -130,26 +131,7 @@ export class AudioEngine {
   /** offline: `count` samples from sample `from` at `sr`, as base64 interleaved stereo 24-bit LE PCM */
   renderOfflineBase64(from: number, count: number, sr: number) {
     this.score ??= buildScore(this.inputs);
-    const B = BLOCK_SEC * sr;
-    const out = new Uint8Array(count * 2 * 3);
-    for (let k = Math.floor(from / B); k * B < from + count; k++) {
-      const key = `${sr}:${k}`;
-      let blk = this.offline.get(key);
-      if (!blk) {
-        blk = renderBlock(this.score, sr, k * B, B);
-        this.offline.set(key, blk);
-        for (const kk of this.offline.keys()) if (+kk.split(':')[1] < k - 1) this.offline.delete(kk);
-      }
-      const a = Math.max(from, k * B), b = Math.min(from + count, (k + 1) * B);
-      for (let s = a; s < b; s++) for (let c = 0; c < 2; c++) {
-        const v = Math.round(Math.max(-1, Math.min(1, blk[(s - k * B) * 2 + c])) * 8388607);
-        const o = ((s - from) * 2 + c) * 3;
-        out[o] = v & 255; out[o + 1] = (v >> 8) & 255; out[o + 2] = (v >> 16) & 255;
-      }
-    }
-    let bin = '';
-    for (let i = 0; i < out.length; i += 0x8000) bin += String.fromCharCode(...out.subarray(i, i + 0x8000));
-    return btoa(bin);
+    return base64(renderPcm24(this.score, sr, from, count, this.offline));
   }
 
   info() {

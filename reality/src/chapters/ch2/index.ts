@@ -2,7 +2,7 @@
 // hydrogen atom, where the planetary picture dissolves into Born-rule samples and |ψ|² clouds.
 import * as THREE from 'three';
 import type { ChapterInstance, ChapterOutput, EngineContext, Frame } from '../../engine/types';
-import { logTrack, track, registerRig, type CameraPose } from '../../engine/choreo';
+import { logTrack, track, registerRig, type CameraPose, freeOrbit } from '../../engine/choreo';
 import { ramp, clamp, trap } from '../../engine/ease';
 import { CellLayer, toWorld } from './cell';
 import { makeChromatin, makeNucleosomes, AtomLayer, DensityLayer, LayerRT } from './nano';
@@ -123,7 +123,7 @@ export default function create(ctx: EngineContext): ChapterInstance {
     cam.updateProjectionMatrix();
     cam.position.copy(target).addScaledVector(dir, d);
     cam.up.set(0, 1, 0);
-    cam.lookAt(target);
+    cam.lookAt(target); freeOrbit(cam, target);
     cam.updateMatrixWorld();
     return d;
   }

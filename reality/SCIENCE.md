@@ -2,12 +2,12 @@
 
 _Generated from `src/content/ledger.ts` by `npm run ledger`. Do not edit by hand._
 
-Every caption and equation shown on screen references a row below (checked by `tests/ledger.test.ts`).
+Every caption and equation shown on screen references a row below (checked by `tests/content.test.ts`).
 Epistemic levels: **ESTABLISHED** (experimentally or mathematically settled), **INTERPRETATION** (a reading of established physics that is not itself testable), **SPECULATIVE** (hypotheses without confirming evidence, or open problems).
 
 ## How sources were consulted
 
-Fetching web pages was **blocked** by the build environment's network policy (arxiv.org, nist.gov, nature.com, aanda.org, adsabs, wikipedia.org all returned egress-blocked). A web *search* tool was available, and it returns excerpts of the result pages. Sources marked `search-excerpt` were checked **only against those excerpts** for the specific fact cited; the full papers were not read. Rows citing `TXT` rely on standard textbook physics or mathematics for which no source was fetched. `TEST` means the statement is also verified numerically by this project's unit tests.
+Fetching web pages was **blocked** by the build environment's network policy (arxiv.org, nist.gov, nature.com, aanda.org, adsabs, wikipedia.org all returned egress-blocked). A web *search* tool was available, and it returns excerpts of the result pages. Sources marked `search-excerpt` were checked **only against those excerpts** for the specific fact cited; the full papers were not read. Rows citing `TXT` rely on standard textbook physics or mathematics for which no source was fetched. `TEST` means the statement is also verified numerically by this project's unit tests. `bundled-data` marks a dataset that ships inside the build (coastlines, Earth imagery).
 
 ## Claims
 
@@ -142,7 +142,7 @@ Fetching web pages was **blocked** by the build environment's network policy (ar
 
 | id | claim | how it is depicted | level | sources | note |
 |---|---|---|---|---|---|
-| C10.1 | Earth’s mean radius is 6,371 km; the Moon is ~384,400 km away; 1 au = 149,597,870,700 m. | Scale zoom. | **ESTABLISHED** | TXT |  |
+| C10.1 | Earth’s mean radius is 6,371 km; the Moon is ~384,400 km away; 1 au = 149,597,870,700 m. | Continuous scale zoom. The room, figure and land close-up (fields, trees, river) are illustrative; the globe is coloured with a Blue Marble-style composite, coastlines and the water mask come from Natural Earth; clouds and fine terrain detail are procedural. | **ESTABLISHED** | TXT, S43, S44 | Planet sizes in the Solar System view are not to scale; orbits are circles. |
 | C10.2 | The nearest star, Proxima Centauri, is 1.30 pc (4.2 light-years) away. | Local star field (procedural, realistic density). | **ESTABLISHED** | TXT | Star positions procedural except labelled stars. |
 | C10.3 | The Sun is ~8.2 kpc from the centre of the Milky Way, a barred spiral. | Illustrative particle model of the Galaxy. | **ESTABLISHED** | S23 |  |
 | C10.4 | Andromeda is ~765 kpc (2.5 million light-years) away. | Local Group. | **ESTABLISHED** | S26 |  |
@@ -255,6 +255,8 @@ Fetching web pages was **blocked** by the build environment's network policy (ar
 | S40 | Bousso R., Polchinski J. (2000), JHEP; Douglas M.R., statistics of string vacua — landscape estimate ~10⁵⁰⁰ vacua (speculative) | search-excerpt | [link](https://arxiv.org/abs/1208.5715) |
 | S41 | Ellis R.J. (2001), Macromolecular crowding: obvious but underappreciated, Trends Biochem. Sci. 26, 597 | search-excerpt | [link](https://pubmed.ncbi.nlm.nih.gov/11590012/) |
 | S42 | Dartnall H.J.A., Bowmaker J.K., Mollon J.D. (1983), Human visual pigments, Proc. R. Soc. B 220, 115 — λmax rods 496.3, L 558.4, M 530.8, S 419.0 nm | search-excerpt | [link](https://pubmed.ncbi.nlm.nih.gov/6140680/) |
+| S43 | Natural Earth 1:50m land polygons (public domain), via the world-atlas npm package (TopoJSON) | bundled-data | [link](https://www.naturalearthdata.com/) |
+| S44 | Cloud-free true-colour Earth and night-lights maps in the style of NASA Blue Marble / Black Marble, as shipped in the three-globe npm package example assets (exact NASA product not verified here; see src/assets/earth/PROVENANCE.md) | bundled-data | [link](https://visibleearth.nasa.gov/) |
 | TXT | Standard textbook physics / mathematics (no source fetched in the build environment) | textbook | — |
 | TEST | Verified numerically by this project's unit tests (tests/*.test.ts) | textbook | — |
 

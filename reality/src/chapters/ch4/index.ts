@@ -2,6 +2,7 @@
 // colour built from three cone signals (a computed metamer pair) → the visible band on a true
 // logarithmic axis of the electromagnetic spectrum.
 import * as THREE from 'three';
+import { freeOrbit } from '../../engine/choreo';
 import type { ChapterInstance, ChapterOutput, EngineContext, Frame } from '../../engine/types';
 import { ramp, clamp, trap, smooth } from '../../engine/ease';
 import { govardovskii, LMAX } from '../../math/mosaic';
@@ -82,7 +83,7 @@ export default function create(ctx: EngineContext): ChapterInstance {
         const ang = 0.5 + lt * 0.05;
         cam.aspect = f.aspect; cam.updateProjectionMatrix();
         cam.position.set(Math.sin(ang) * 11, 3.2, Math.cos(ang) * 11);
-        cam.lookAt(0, 0.2, 0); cam.updateMatrixWorld();
+        cam.lookAt(0, 0.2, 0); freeOrbit(cam, 0, 0.2, 0); cam.updateMatrixWorld();
         const iso = smooth(clamp((lt - 4.3) / 0.8));
         const pts = retinalShape(iso);
         pts.forEach((p, i) => { retPts[i * 3] = p.x; retPts[i * 3 + 1] = p.y; retPts[i * 3 + 2] = p.z; });

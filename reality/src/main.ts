@@ -41,6 +41,8 @@ declare global {
     __audioInfo: () => unknown;
     __info: Record<string, unknown>;
     __stillDone?: boolean;
+    __hdrCheck?: () => { samples: number; nonFinite: number; maxValue: number; size: number[] };
+    __live?: Record<string, unknown>;
     __errors: string[];
     __pixelsAt?: (x: number, y: number, w: number, h: number) => number[];
   }
@@ -184,6 +186,7 @@ async function boot() {
     window.__renderAt = (t: number) => { renderFrame(t, 1, FPS); gl.finish(); };
     window.__pixelsAt = (x, y, w, h) => { const b = new Uint8Array(w * h * 4); gl.readPixels(x, y, w, h, gl.RGBA, gl.UNSIGNED_BYTE, b); return Array.from(b); };
     window.__renderAudio = (from: number, count: number, sr: number) => audio.renderOfflineBase64(from, count, sr);
+    window.__hdrCheck = () => director.hdrCheck(renderer);
     window.__audioInfo = () => audio.info();
     window.__info = { duration: DURATION, fps: FPS, w: W, h: H, sub: SUB, frames: Math.ceil(DURATION * FPS), tier: quality.tier, seed: SEED, chapters: CHAPTERS.map((c) => ({ n: c.n, key: c.key, start: c.start, end: c.end })) };
     readyResolve(window.__info);
@@ -256,8 +259,12 @@ async function boot() {
 
   let last = performance.now();
   let fpsAcc = 0, fpsN = 0, fpsShow = 0;
+  // verification probes (read-only)
+  const frameMs: number[] = [];
+  window.__live = { frameMs, t: () => clock.t, playing: () => clock.playing, audio: () => audio.state(), audioT: () => audio.timelineTime(), tier: () => quality.tier, scale: () => quality.renderScale };
   function loop(now: number) {
     const dt = now - last; last = now;
+    frameMs.push(dt); if (frameMs.length > 600) frameMs.shift();
     freeCam.blend += ((freeCam.enabled ? 1 : 0) - freeCam.blend) * Math.min(1, dt / 400);
     clock.tick(now);
     renderFrame(clock.t, 1, 60);

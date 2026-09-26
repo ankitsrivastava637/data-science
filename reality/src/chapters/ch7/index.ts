@@ -8,7 +8,7 @@ import { projectToScreen } from '../util';
 import { D2 } from '../draw2d';
 import { registerTarget } from '../../engine/targets';
 import { makeTarget } from '../../engine/particles';
-import { registerRig } from '../../engine/choreo';
+import { registerRig, freeOrbit } from '../../engine/choreo';
 
 const GLOW = 0xe9dfcc;
 
@@ -112,7 +112,7 @@ export default function create(ctx: EngineContext): ChapterInstance {
         const orbit = 0.4 + lt * 0.04;
         cam.fov = 38; cam.updateProjectionMatrix();
         cam.position.set(Math.sin(orbit) * 7.5, 2.5 + Math.sin(lt * 0.1), Math.cos(orbit) * 7.5);
-        cam.lookAt(0, 0, 0); cam.updateMatrixWorld();
+        cam.lookAt(0, 0, 0); freeOrbit(cam, 0, 0, 0); cam.updateMatrixWorld();
         const lab = (t0: number, t1: number, s: string) => { const a = trap(t0, t1, lt, 0.5, 0.5); if (a > 0.01) out.labels.push({ x: 0.5, y: 0.82, text: s, align: 'center', alpha: a, size: 1.15 }); };
         lab(1, 3.4, 'a point: 0 dimensions');
         lab(3.4, 6.2, 'a line: 1');
@@ -172,7 +172,7 @@ export default function create(ctx: EngineContext): ChapterInstance {
         const orbit = -0.55 + (lt - 26) * 0.012;
         cam.fov = 40; cam.updateProjectionMatrix();
         cam.position.set(Math.sin(orbit) * 16.5, 3.6, Math.cos(orbit) * 16.5);
-        cam.lookAt(0, 0.3, 0); cam.updateMatrixWorld();
+        cam.lookAt(0, 0.3, 0); freeOrbit(cam, 0, 0.3, 0); cam.updateMatrixWorld();
         const e1 = projectToScreen(cam, ev1), e2 = projectToScreen(cam, ev2);
         const la = trap(37, 57, lt, 1, 1.5);
         if (la > 0.01) {
@@ -190,7 +190,7 @@ export default function create(ctx: EngineContext): ChapterInstance {
         const a = trap(58.5, 79.5, lt, 1.2, 1.5);
         const prog = clamp((lt - 60) / 12);
         draw2d = (g, W, H, a0) => drawTwins(new D2(g, W, H, a0 * a), prog);
-        cam.position.set(0, 0, 10); cam.lookAt(0, 0, 0); cam.updateMatrixWorld();
+        cam.position.set(0, 0, 10); cam.lookAt(0, 0, 0); freeOrbit(cam, 0, 0, 0); cam.updateMatrixWorld();
         out.hud = { s: null, abstractLabel: 'spacetime diagram — units with c = 1' };
       } else {
         // ── block universe: worldlines as a static sculpture; slices of two observers sweep ──
@@ -226,7 +226,7 @@ export default function create(ctx: EngineContext): ChapterInstance {
         const orbit = 0.3 + (lt - 79) * 0.03;
         cam.fov = 40; cam.updateProjectionMatrix();
         cam.position.set(Math.sin(orbit) * 19, 4.5, Math.cos(orbit) * 19);
-        cam.lookAt(0, 0, 0); cam.updateMatrixWorld();
+        cam.lookAt(0, 0, 0); freeOrbit(cam, 0, 0, 0); cam.updateMatrixWorld();
         const ln = trap(80, 90, lt, 1, 1);
         if (ln > 0.01) {
           const p = projectToScreen(cam, earth[Math.floor(earth.length * 0.7)]);

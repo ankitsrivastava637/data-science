@@ -7,7 +7,7 @@ import { feature } from 'topojson-client';
 import land50 from 'world-atlas/land-50m.json';
 import type { ChapterInstance, ChapterOutput, EngineContext, Frame } from '../../engine/types';
 import { ramp, clamp, trap, smooth } from '../../engine/ease';
-import { track } from '../../engine/choreo';
+import { track, freeOrbit } from '../../engine/choreo';
 import { projectToScreen } from '../util';
 import { Rng } from '../../engine/prng';
 import { COMMON } from '../../shaders/common';
@@ -519,7 +519,7 @@ export default function create(ctx: EngineContext): ChapterInstance {
         const dl = L.dir ? L.dir(dir, s) : dir;
         L.cam.up.set(0, 1, 0);
         if (L.dir) L.cam.up.applyQuaternion(toSurface).lerp(new THREE.Vector3(0, 1, 0), smooth(clamp((s - 6.6) / 1.6))).normalize();
-        L.cam.position.copy(tgt).addScaledVector(dl, d); L.cam.lookAt(tgt); L.cam.updateMatrixWorld();
+        L.cam.position.copy(tgt).addScaledVector(dl, d); L.cam.lookAt(tgt); freeOrbit(L.cam, tgt); L.cam.updateMatrixWorld();
         for (const p of L.points) { const u = (p.material as THREE.ShaderMaterial).uniforms; u.uProj.value = proj; u.uW.value = L.weight; }
       }
       // lit materials fade through opacity

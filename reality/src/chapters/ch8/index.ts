@@ -10,7 +10,7 @@ import { integrateTimelike } from '../../math/geodesic';
 import { D2, lerp } from '../draw2d';
 import { projectToScreen } from '../util';
 import { SINGULARITY_CUT_LOCAL } from '../../content/chapters';
-import { track } from '../../engine/choreo';
+import { track, freeOrbit } from '../../engine/choreo';
 
 const flamm = (r: number) => 2 * Math.sqrt(Math.max(0, r - 1));
 // black-hole camera: distance and inclination
@@ -93,7 +93,7 @@ export default function create(ctx: EngineContext): ChapterInstance {
         const ang = 0.6 + lt * 0.05;
         surfCam.aspect = f.aspect; surfCam.updateProjectionMatrix();
         surfCam.position.set(Math.sin(ang) * 30, 13, Math.cos(ang) * 30);
-        surfCam.lookAt(0, -3.5, 0); surfCam.updateMatrixWorld();
+        surfCam.lookAt(0, -3.5, 0); freeOrbit(surfCam, 0, -3.5, 0); surfCam.updateMatrixWorld();
         const n = Math.min(orbit.path.length - 1, Math.floor(clamp((lt - 1) / 15) * (orbit.path.length - 1)));
         orbitGeo.setDrawRange(0, n + 1);
         const p = orbit.path[n];
@@ -111,7 +111,7 @@ export default function create(ctx: EngineContext): ChapterInstance {
         bhCam.aspect = f.aspect; bhCam.fov = 46; bhCam.updateProjectionMatrix();
         bhCam.position.set(R * Math.cos(inc) * Math.sin(az), R * Math.sin(inc), R * Math.cos(inc) * Math.cos(az));
         bhCam.up.set(0.08, 1, 0).normalize();
-        bhCam.lookAt(0, 0, 0); bhCam.updateMatrixWorld();
+        bhCam.lookAt(0, 0, 0); freeOrbit(bhCam, 0, 0, 0); bhCam.updateMatrixWorld();
         bh.setCamera(bhCam, f.aspect, W, H);
         const u = bh.mat.uniforms;
         u.uSteps.value = Math.round(260 * Math.min(1.3, quality.steps));
@@ -144,7 +144,7 @@ export default function create(ctx: EngineContext): ChapterInstance {
         tileMat.uniforms.uW.value = w.info * (1 - ramp(86.5, 89, lt));
         tileMat.uniforms.uT.value = lt;
         infoCam.aspect = f.aspect; infoCam.updateProjectionMatrix();
-        infoCam.position.set(-1.8, 0.6, 4.8); infoCam.lookAt(-1.1, 0, 0); infoCam.updateMatrixWorld();
+        infoCam.position.set(-1.8, 0.6, 4.8); infoCam.lookAt(-1.1, 0, 0); freeOrbit(infoCam, -1.1, 0, 0); infoCam.updateMatrixWorld();
         // Hawking quanta: sparse, deterministic outward streaks
         for (let i = 0; i < 600; i++) {
           const ph = (lt * 0.25 + i * 0.6180339) % 1;

@@ -9,7 +9,8 @@ export interface Source {
   cite: string;
   url: string;
   /** How the source was consulted from the build environment. */
-  access: 'search-excerpt' | 'textbook';
+  /** search-excerpt: read via search snippets only · textbook: standard knowledge · bundled-data: a dataset shipped in the build */
+  access: 'search-excerpt' | 'textbook' | 'bundled-data';
 }
 
 export interface Claim {
@@ -78,6 +79,8 @@ export const SOURCES: Source[] = [
   { id: 'S40', cite: 'Bousso R., Polchinski J. (2000), JHEP; Douglas M.R., statistics of string vacua — landscape estimate ~10⁵⁰⁰ vacua (speculative)', url: 'https://arxiv.org/abs/1208.5715', access: 'search-excerpt' },
   { id: 'S41', cite: 'Ellis R.J. (2001), Macromolecular crowding: obvious but underappreciated, Trends Biochem. Sci. 26, 597', url: 'https://pubmed.ncbi.nlm.nih.gov/11590012/', access: 'search-excerpt' },
   { id: 'S42', cite: 'Dartnall H.J.A., Bowmaker J.K., Mollon J.D. (1983), Human visual pigments, Proc. R. Soc. B 220, 115 — λmax rods 496.3, L 558.4, M 530.8, S 419.0 nm', url: 'https://pubmed.ncbi.nlm.nih.gov/6140680/', access: 'search-excerpt' },
+  { id: 'S43', cite: 'Natural Earth 1:50m land polygons (public domain), via the world-atlas npm package (TopoJSON)', url: 'https://www.naturalearthdata.com/', access: 'bundled-data' },
+  { id: 'S44', cite: 'Cloud-free true-colour Earth and night-lights maps in the style of NASA Blue Marble / Black Marble, as shipped in the three-globe npm package example assets (exact NASA product not verified here; see src/assets/earth/PROVENANCE.md)', url: 'https://visibleearth.nasa.gov/', access: 'bundled-data' },
   { id: 'TXT', cite: 'Standard textbook physics / mathematics (no source fetched in the build environment)', url: '', access: 'textbook' },
   { id: 'TEST', cite: 'Verified numerically by this project\'s unit tests (tests/*.test.ts)', url: '', access: 'textbook' },
 ];
@@ -184,7 +187,7 @@ export const CLAIMS: Claim[] = [
   { id: 'C9.18', chapter: 9, claim: 'Every continuous symmetry of a physical law implies a conserved quantity (Noether, 1918): time ↔ energy, space ↔ momentum, rotation ↔ angular momentum.', depiction: 'Orbit sweeping equal areas (rotational symmetry → angular momentum).', level: 'ESTABLISHED', sources: ['S39', 'TEST'] },
 
   // ── Chapter 10 · Cosmos ───────────────────────────────────────────────
-  { id: 'C10.1', chapter: 10, claim: 'Earth’s mean radius is 6,371 km; the Moon is ~384,400 km away; 1 au = 149,597,870,700 m.', depiction: 'Scale zoom.', level: 'ESTABLISHED', sources: ['TXT'] },
+  { id: 'C10.1', chapter: 10, claim: 'Earth’s mean radius is 6,371 km; the Moon is ~384,400 km away; 1 au = 149,597,870,700 m.', depiction: 'Continuous scale zoom. The room, figure and land close-up (fields, trees, river) are illustrative; the globe is coloured with a Blue Marble-style composite, coastlines and the water mask come from Natural Earth; clouds and fine terrain detail are procedural.', level: 'ESTABLISHED', sources: ['TXT', 'S43', 'S44'], note: 'Planet sizes in the Solar System view are not to scale; orbits are circles.' },
   { id: 'C10.2', chapter: 10, claim: 'The nearest star, Proxima Centauri, is 1.30 pc (4.2 light-years) away.', depiction: 'Local star field (procedural, realistic density).', level: 'ESTABLISHED', sources: ['TXT'], note: 'Star positions procedural except labelled stars.' },
   { id: 'C10.3', chapter: 10, claim: 'The Sun is ~8.2 kpc from the centre of the Milky Way, a barred spiral.', depiction: 'Illustrative particle model of the Galaxy.', level: 'ESTABLISHED', sources: ['S23'] },
   { id: 'C10.4', chapter: 10, claim: 'Andromeda is ~765 kpc (2.5 million light-years) away.', depiction: 'Local Group.', level: 'ESTABLISHED', sources: ['S26'] },

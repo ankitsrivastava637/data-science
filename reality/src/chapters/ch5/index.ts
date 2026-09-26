@@ -2,6 +2,7 @@
 // collapses the messy signal into spectral lines and back; oscillator levels; chain normal modes;
 // an ideal gas where many microstates collapse into one coarse-grained macrostate.
 import * as THREE from 'three';
+import { freeOrbit } from '../../engine/choreo';
 import type { ChapterInstance, ChapterOutput, EngineContext, Frame } from '../../engine/types';
 import { ramp, clamp, trap, smooth } from '../../engine/ease';
 import { D2 } from '../draw2d';
@@ -99,7 +100,7 @@ export default function create(ctx: EngineContext): ChapterInstance {
         cam.aspect = f.aspect; cam.updateProjectionMatrix();
         const front = new THREE.Vector3(0.5, 3.5, 21), sidePos = new THREE.Vector3(24, 2.5, -4.2);
         cam.position.lerpVectors(front, sidePos, side);
-        cam.lookAt(new THREE.Vector3(-0.5, 0.5, -1.5 * decomp).lerp(new THREE.Vector3(0, 0, -4.2), side));
+        cam.lookAt(new THREE.Vector3(-0.5, 0.5, -1.5 * decomp).lerp(new THREE.Vector3(0, 0, -4.2), side)); freeOrbit(cam, new THREE.Vector3(-0.5, 0.5, -1.5 * decomp).lerp(new THREE.Vector3(0, 0, -4.2), side));
         cam.updateMatrixWorld();
         molecule.visible = side < 0.6;
         // labels: spectral lines in cm⁻¹ when seen from the side

@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import type { ChapterInstance, ChapterOutput, EngineContext, Frame } from '../../engine/types';
 import { FullscreenPass } from '../../engine/post';
-import { logTrack, track, registerRig, type CameraPose } from '../../engine/choreo';
+import { logTrack, track, registerRig, type CameraPose, freeOrbit } from '../../engine/choreo';
 import { ramp, clamp, trap } from '../../engine/ease';
 import { makeEyeMaterial } from './eye';
 import { makeFundusMaterial, makeFundusTexture, DISC } from './fundus';
@@ -81,7 +81,7 @@ export default function create(ctx: EngineContext): ChapterInstance {
       if (w.eye > 0) {
         eyePose(lt, f.aspect, pose);
         eyeCam.aspect = f.aspect; eyeCam.fov = pose.fov; eyeCam.updateProjectionMatrix();
-        eyeCam.position.copy(pose.position); eyeCam.up.copy(pose.up); eyeCam.lookAt(pose.target); eyeCam.updateMatrixWorld();
+        eyeCam.position.copy(pose.position); eyeCam.up.copy(pose.up); eyeCam.lookAt(pose.target); freeOrbit(eyeCam, pose.target); eyeCam.updateMatrixWorld();
         const u = eyeMat.uniforms;
         u.camPos.value.copy(eyeCam.position);
         camRotation(eyeCam, u.camRot.value);
@@ -102,7 +102,7 @@ export default function create(ctx: EngineContext): ChapterInstance {
         fCam.aspect = f.aspect; fCam.updateProjectionMatrix();
         fCam.position.set(tx * 0.35, ty * 0.35, -12 + d);
         fCam.up.set(0, 1, 0);
-        fCam.lookAt(tx, ty, -12);
+        fCam.lookAt(tx, ty, -12); freeOrbit(fCam, tx, ty, -12);
         fCam.updateMatrixWorld();
         const u = fundusMat.uniforms;
         u.camPos.value.copy(fCam.position);
@@ -122,7 +122,7 @@ export default function create(ctx: EngineContext): ChapterInstance {
         mosaicPose(lt, f.aspect, pose);
         cam.aspect = f.aspect; cam.fov = pose.fov; cam.near = Math.max(0.05, pose.position.length() * 0.01); cam.far = pose.position.length() * 50 + 2000;
         cam.updateProjectionMatrix();
-        cam.position.copy(pose.position); cam.up.copy(pose.up); cam.lookAt(pose.target); cam.updateMatrixWorld();
+        cam.position.copy(pose.position); cam.up.copy(pose.up); cam.lookAt(pose.target); freeOrbit(cam, pose.target); cam.updateMatrixWorld();
         const proj = f.height / (2 * Math.tan((pose.fov * Math.PI) / 360));
         (inner.material as THREE.ShaderMaterial).uniforms.uProj.value = proj;
         (inner.material as THREE.ShaderMaterial).uniforms.uWeight.value = w.inner;

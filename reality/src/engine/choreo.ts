@@ -105,3 +105,15 @@ export function poseToCamera(p: CameraPose, cam: THREE.PerspectiveCamera) {
   if (cam.fov !== p.fov) { cam.fov = p.fov; cam.updateProjectionMatrix(); }
   cam.updateMatrixWorld();
 }
+
+const _ft = new THREE.Vector3();
+const _fp: CameraPose = { position: new THREE.Vector3(), target: new THREE.Vector3(), up: new THREE.Vector3(0, 1, 0), fov: 40 };
+/** Orbit an already-aimed camera around its target by the user's free-camera offsets. A strict
+ *  no-op while free camera is off (render mode, stills), so choreographed frames are unchanged. */
+export function freeOrbit(cam: THREE.Camera, x: number | THREE.Vector3, y?: number, z?: number) {
+  if (freeCam.blend <= 1e-4) return;
+  if (typeof x === 'number') _ft.set(x, y!, z!); else _ft.copy(x);
+  _fp.position.copy(cam.position); _fp.target.copy(_ft); _fp.up.copy(cam.up);
+  applyFreeCam(_fp);
+  cam.position.copy(_fp.position); cam.lookAt(_ft); cam.updateMatrixWorld();
+}

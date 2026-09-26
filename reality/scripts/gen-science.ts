@@ -9,12 +9,12 @@ out.push('# SCIENCE.md — claim ledger');
 out.push('');
 out.push('_Generated from `src/content/ledger.ts` by `npm run ledger`. Do not edit by hand._');
 out.push('');
-out.push('Every caption and equation shown on screen references a row below (checked by `tests/ledger.test.ts`).');
+out.push('Every caption and equation shown on screen references a row below (checked by `tests/content.test.ts`).');
 out.push('Epistemic levels: **ESTABLISHED** (experimentally or mathematically settled), **INTERPRETATION** (a reading of established physics that is not itself testable), **SPECULATIVE** (hypotheses without confirming evidence, or open problems).');
 out.push('');
 out.push('## How sources were consulted');
 out.push('');
-out.push('Fetching web pages was **blocked** by the build environment\'s network policy (arxiv.org, nist.gov, nature.com, aanda.org, adsabs, wikipedia.org all returned egress-blocked). A web *search* tool was available, and it returns excerpts of the result pages. Sources marked `search-excerpt` were checked **only against those excerpts** for the specific fact cited; the full papers were not read. Rows citing `TXT` rely on standard textbook physics or mathematics for which no source was fetched. `TEST` means the statement is also verified numerically by this project\'s unit tests.');
+out.push('Fetching web pages was **blocked** by the build environment\'s network policy (arxiv.org, nist.gov, nature.com, aanda.org, adsabs, wikipedia.org all returned egress-blocked). A web *search* tool was available, and it returns excerpts of the result pages. Sources marked `search-excerpt` were checked **only against those excerpts** for the specific fact cited; the full papers were not read. Rows citing `TXT` rely on standard textbook physics or mathematics for which no source was fetched. `TEST` means the statement is also verified numerically by this project\'s unit tests. `bundled-data` marks a dataset that ships inside the build (coastlines, Earth imagery).');
 out.push('');
 out.push('## Claims');
 for (let ch = 1; ch <= 12; ch++) {

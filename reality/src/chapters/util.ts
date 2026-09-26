@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { freeOrbit } from '../engine/choreo';
 
 const _v = new THREE.Vector3();
 /** Project a world point to screen space [0,1]² (origin top-left). */
@@ -18,4 +19,5 @@ export function setCam(cam: THREE.PerspectiveCamera, pos: THREE.Vector3, target:
   cam.updateProjectionMatrix();
   cam.lookAt(target);
   cam.updateMatrixWorld();
+  freeOrbit(cam, target);
 }

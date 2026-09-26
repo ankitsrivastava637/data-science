@@ -71,6 +71,23 @@ export class Director {
     }
   }
 
+  /** verification: scan the last chapter render (HDR, half float) for NaN/Inf on a sparse grid */
+  hdrCheck(r: THREE.WebGLRenderer, stride = 4) {
+    const rt = this.rtA, w = rt.width, h = rt.height;
+    const buf = new Uint16Array(w * h * 4);
+    r.readRenderTargetPixels(rt, 0, 0, w, h, buf);
+    let bad = 0, max = 0, n = 0;
+    for (let y = 0; y < h; y += stride) for (let x = 0; x < w; x += stride) {
+      const o = (y * w + x) * 4;
+      for (let c = 0; c < 3; c++) {
+        const v = buf[o + c];
+        if ((v & 0x7c00) === 0x7c00) bad++; else max = Math.max(max, THREE.DataUtils.fromHalfFloat(v));
+      }
+      n++;
+    }
+    return { samples: n, nonFinite: bad, maxValue: max, size: [w, h] };
+  }
+
   private get(n: number): ChapterInstance {
     let c = this.inst.get(n);
     if (!c) {

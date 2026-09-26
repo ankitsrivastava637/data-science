@@ -2,7 +2,7 @@
 // lattice → double slit from single detections → spin as a spinor → entanglement as correlation.
 import * as THREE from 'three';
 import type { ChapterInstance, ChapterOutput, EngineContext, Frame } from '../../engine/types';
-import { logTrack, track, registerRig, type CameraPose } from '../../engine/choreo';
+import { logTrack, track, registerRig, type CameraPose, freeOrbit } from '../../engine/choreo';
 import { ramp, clamp, trap } from '../../engine/ease';
 import { OrbitalVolume } from '../common/orbital';
 import { ProtonVolume } from './proton';
@@ -74,7 +74,7 @@ export default function create(ctx: EngineContext): ChapterInstance {
   function place(c: THREE.PerspectiveCamera, fieldLocal: number, aspect: number) {
     const d = fieldLocal / (2 * Math.tan((FOV * Math.PI) / 360) * aspect);
     c.fov = FOV; c.aspect = aspect; c.near = d * 0.01; c.far = d * 200; c.updateProjectionMatrix();
-    c.position.copy(dir).multiplyScalar(d); c.up.set(0, 1, 0); c.lookAt(0, 0, 0); c.updateMatrixWorld();
+    c.position.copy(dir).multiplyScalar(d); c.up.set(0, 1, 0); c.lookAt(0, 0, 0); freeOrbit(c, 0, 0, 0); c.updateMatrixWorld();
   }
 
   return {
@@ -119,7 +119,7 @@ export default function create(ctx: EngineContext): ChapterInstance {
         const ang = 0.35 + (lt - 46) * 0.012;
         fieldCam.aspect = f.aspect; fieldCam.updateProjectionMatrix();
         fieldCam.position.set(Math.sin(ang) * 72, 44, Math.cos(ang) * 72);
-        fieldCam.lookAt(0, -2, 0); fieldCam.updateMatrixWorld();
+        fieldCam.lookAt(0, -2, 0); freeOrbit(fieldCam, 0, -2, 0); fieldCam.updateMatrixWorld();
         const vac = 1;
         const mode = trap(50, 56, lt, 1.2, 1.4);
         const packet = ramp(55, 57, lt);
@@ -139,7 +139,7 @@ export default function create(ctx: EngineContext): ChapterInstance {
         const p1 = new THREE.Vector3(-40, 35, 0), t1 = new THREE.Vector3(shared.slit.screenX, 34, 0);
         slitCam.aspect = f.aspect; slitCam.updateProjectionMatrix();
         slitCam.position.lerpVectors(p0, p1, face);
-        slitCam.lookAt(new THREE.Vector3().lerpVectors(t0, t1, face));
+        slitCam.lookAt(new THREE.Vector3().lerpVectors(t0, t1, face)); freeOrbit(slitCam, new THREE.Vector3().lerpVectors(t0, t1, face));
         slitCam.updateMatrixWorld();
         const su = clamp((lt - SLIT.simStart) / (SLIT.simEnd - SLIT.simStart));
         slit.setSim(su, w.slit * (1 - 0.85 * face), 1);
@@ -159,7 +159,7 @@ export default function create(ctx: EngineContext): ChapterInstance {
       }
       if (w.bloch > 0.001) {
         blochCam.aspect = f.aspect; blochCam.updateProjectionMatrix();
-        blochCam.position.set(3.2, 2.2, 5.6); blochCam.lookAt(0.9, 0, 0); blochCam.updateMatrixWorld();
+        blochCam.position.set(3.2, 2.2, 5.6); blochCam.lookAt(0.9, 0, 0); freeOrbit(blochCam, 0.9, 0, 0); blochCam.updateMatrixWorld();
         bloch.position.set(-0.9, 0, 0);
         const alpha = 4 * Math.PI * ramp(97.8, 106, lt);
         const theta = Math.PI / 2 - 0.35;

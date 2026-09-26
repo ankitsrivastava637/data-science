@@ -1,6 +1,7 @@
 // Chapter 6 · Life as information — transcription, translation as a visible table lookup (the
 // standard genetic code), folding (schematic), and an evolving tree of lineages.
 import * as THREE from 'three';
+import { freeOrbit } from '../../engine/choreo';
 import type { ChapterInstance, ChapterOutput, EngineContext, Frame } from '../../engine/types';
 import { ramp, clamp, trap, smooth } from '../../engine/ease';
 import { D2, lerp } from '../draw2d';
@@ -32,7 +33,7 @@ export default function create(ctx: EngineContext): ChapterInstance {
     update(f: Frame, out: ChapterOutput) {
       const lt = f.lt;
       cam.aspect = f.aspect; cam.updateProjectionMatrix();
-      cam.position.set(Math.sin(lt * 0.02) * 3, 0, 12); cam.lookAt(0, 0, -10); cam.updateMatrixWorld();
+      cam.position.set(Math.sin(lt * 0.02) * 3, 0, 12); cam.lookAt(0, 0, -10); freeOrbit(cam, 0, 0, -10); cam.updateMatrixWorld();
       const a = trap(-2, 37.5, lt, 1.5, 1.5);
       out.draw.push((gg, W, H, a0) => {
         const d = new D2(gg, W, H, a0 * a);
