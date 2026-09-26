@@ -44,7 +44,6 @@ Fetching web pages was **blocked** by the build environment's network policy (ar
 | id | claim | how it is depicted | level | sources | note |
 |---|---|---|---|---|---|
 | C3.1 | The nucleus is roughly 10⁴–10⁵ times smaller than the atom. | Continuous zoom from the electron cloud to the nucleus. | **ESTABLISHED** | TXT |  |
-| C3.2 | Nucleons in a nucleus are not hard balls; they are overlapping, fluctuating distributions. | Fuzzy nucleon densities (schematic arrangement). | **ESTABLISHED** | TXT | Positions schematic. |
 | C3.3 | The proton’s rms charge radius is 0.8414 fm. | Scale readout at the proton. | **ESTABLISHED** | S2 |  |
 | C3.4 | A proton is three valence quarks (uud) within gluon fields and a sea of short-lived quark–antiquark pairs; colour charge is confined. | Illustrative, lattice-QCD-inspired rendering: action-density lumps, flux tubes, sea pairs. | **ESTABLISHED** | S14, TXT | Rendering is illustrative, not a lattice computation; the proton has no fixed geometry. |
 | C3.5 | Lattice QCD shows gluon flux tubes forming a Y shape between three static quarks at large separation. | Y-shaped flux tube between colour charges. | **ESTABLISHED** | S14 |  |

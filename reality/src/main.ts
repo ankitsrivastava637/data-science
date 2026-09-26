@@ -89,7 +89,7 @@ async function boot() {
   const clock = new Clock();
 
   let shared: Shared;
-  setWebResolution(quality.tier === 'low' ? 48 : 64);
+  setWebResolution(quality.tier === 'low' ? 32 : 64); // FFT sizes must be powers of two
   try {
     shared = await precompute(SEED, quality.particles, (d, t, l) => ui?.setProgress(d, t, l));
   } catch (e) {

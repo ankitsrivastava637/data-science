@@ -110,7 +110,6 @@ export const CLAIMS: Claim[] = [
 
   // ── Chapter 3 · Quantum ───────────────────────────────────────────────
   { id: 'C3.1', chapter: 3, claim: 'The nucleus is roughly 10⁴–10⁵ times smaller than the atom.', depiction: 'Continuous zoom from the electron cloud to the nucleus.', level: 'ESTABLISHED', sources: ['TXT'] },
-  { id: 'C3.2', chapter: 3, claim: 'Nucleons in a nucleus are not hard balls; they are overlapping, fluctuating distributions.', depiction: 'Fuzzy nucleon densities (schematic arrangement).', level: 'ESTABLISHED', sources: ['TXT'], note: 'Positions schematic.' },
   { id: 'C3.3', chapter: 3, claim: 'The proton’s rms charge radius is 0.8414 fm.', depiction: 'Scale readout at the proton.', level: 'ESTABLISHED', sources: ['S2'] },
   { id: 'C3.4', chapter: 3, claim: 'A proton is three valence quarks (uud) within gluon fields and a sea of short-lived quark–antiquark pairs; colour charge is confined.', depiction: 'Illustrative, lattice-QCD-inspired rendering: action-density lumps, flux tubes, sea pairs.', level: 'ESTABLISHED', sources: ['S14', 'TXT'], note: 'Rendering is illustrative, not a lattice computation; the proton has no fixed geometry.' },
   { id: 'C3.5', chapter: 3, claim: 'Lattice QCD shows gluon flux tubes forming a Y shape between three static quarks at large separation.', depiction: 'Y-shaped flux tube between colour charges.', level: 'ESTABLISHED', sources: ['S14'] },

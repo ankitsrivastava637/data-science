@@ -40,7 +40,7 @@ export default defineConfig(({ mode }) => {
   return {
     base: './',
     plugins: [embeddedAssets(), ...(single ? [viteSingleFile({ removeViteModuleLoader: true })] : [])],
-    worker: { format: 'es' },
+    worker: { format: 'iife' }, // classic workers: module workers from blob: URLs fail on file:// (opaque origin)
     build: {
       target: 'es2022',
       outDir: single ? 'dist-single' : 'dist',

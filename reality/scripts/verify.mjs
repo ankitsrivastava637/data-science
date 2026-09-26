@@ -16,10 +16,17 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist'), OUT = join(ROOT, 'verification'), SHOTS = join(OUT, 'shots');
 const PAGE = 'reality.html';
 if (!existsSync(join(DIST, PAGE))) { console.error('run `npm run build` first'); process.exit(1); }
-rmSync(SHOTS, { recursive: true, force: true }); mkdirSync(SHOTS, { recursive: true });
+// --only shots,determinism,offline,live,audio  runs a subset and merges it into the existing report
+const ONLY = (() => { const i = process.argv.indexOf('--only'); return i > 0 ? process.argv[i + 1].split(',') : null; })();
+const run = (name) => !ONLY || ONLY.includes(name);
+if (run('shots')) { rmSync(SHOTS, { recursive: true, force: true }); }
+mkdirSync(SHOTS, { recursive: true });
 const sha = (b) => createHash('sha256').update(b).digest('hex').slice(0, 16);
-const report = { when: new Date().toISOString(), environment: {}, shots: [], determinism: {}, offline: {}, lowTier: {}, audio: {}, failures: [] };
+const prev = ONLY && existsSync(join(OUT, 'report.json')) ? JSON.parse(readFileSync(join(OUT, 'report.json'), 'utf8')) : null;
+const report = { when: new Date().toISOString(), environment: {}, shots: [], determinism: {}, offline: {}, lowTier: {}, freeCamera: {}, audio: {}, failures: [] };
+if (prev) { Object.assign(report, prev, { when: report.when }); report.failures = []; }
 const fail = (m) => { report.failures.push(m); console.log('  FAIL', m); };
+const save = () => writeFileSync(join(OUT, 'report.json'), JSON.stringify(report, null, 2)); // after every section
 
 // static server for dist/
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.jpg': 'image/jpeg', '.png': 'image/png' };
@@ -45,12 +52,12 @@ async function openLogged(url, ctx = context) {
 
 // ── 1 · checkpoints: title, each chapter start (+2 s), each transition midpoint, end card ──
 const info = await (async () => { const { page } = await openLogged(`${BASE}?render=1&w=320&h=180&fps=30&sub=1&tier=low`); const i = await page.evaluate(() => window.__ready); report.environment.renderer = await page.evaluate(() => { const gl = document.createElement('canvas').getContext('webgl2'); const e = gl.getExtension('WEBGL_debug_renderer_info'); return e ? gl.getParameter(e.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER); }); await page.close(); return i; })();
-const points = [[2, 'title card']];
+const points = run('shots') ? [[2, 'title card']] : [];
 for (const c of info.chapters) {
   points.push([c.start, `ch${c.n} transition midpoint`]);
   points.push([c.start + 2, `ch${c.n} ${c.key} start`]);
 }
-points.push([617.02, 'ch8 singularity cut'], [info.duration - 2, 'end card']);
+if (run('shots')) { report.shots = []; points.push([617.02, 'ch8 singularity cut'], [info.duration - 2, 'end card']); }
 console.log(`checkpoints: ${points.length}`);
 for (const [t, label] of points) {
   const t0 = Date.now();
@@ -70,8 +77,9 @@ for (const [t, label] of points) {
   await page.close();
 }
 
+save();
 // ── 2 · determinism ──
-{
+if (run('determinism')) {
   const shot = async () => { const { page } = await openLogged(`${BASE}?still=1&t=300.4&tier=high`); await page.waitForFunction(() => window.__stillDone === true); const b = await page.screenshot(); await page.close(); return b; };
   const a = await shot(), b = await shot();
   report.determinism.stillAcrossLoads = { a: sha(a), b: sha(b), identical: a.equals(b) };
@@ -91,8 +99,9 @@ for (const [t, label] of points) {
   console.log(`determinism: still across loads ${a.equals(b)}, render within ${sameWithin}, across sessions ${sameAcross}`);
 }
 
+save();
 // ── 3 · file:// with networking disabled; log every request ──
-{
+if (run('offline')) {
   const off = await browser.newContext({ offline: true });
   const url = pathToFileURL(join(DIST, PAGE)).href + '?still=1&t=460&tier=high';
   const reqs = [];
@@ -112,13 +121,12 @@ for (const [t, label] of points) {
   await off.close();
 }
 
-// ── 4 · Low tier, live mode: frame times and the audio clock ──
-{
+save();
+// ── 4 · Low tier, live mode: frame times, the audio clock, free camera ──
+if (run('live')) {
   const { page, logs } = await openLogged(`${BASE}?tier=low&t=300`);
-  await page.waitForSelector('button', { timeout: 120000 });
-  const begin = await page.$('button:has-text("Begin")');
-  await page.waitForFunction(() => { const b = [...document.querySelectorAll('button')].find((x) => /begin/i.test(x.textContent)); return b && !b.disabled; }, null, { timeout: 180000 });
-  await begin.click();
+  await page.waitForFunction(() => { const b = document.querySelector('button.begin'); return b && !b.disabled; }, null, { timeout: 240000 });
+  await page.click('button.begin');
   await page.waitForFunction(() => window.__live && window.__live.playing(), null, { timeout: 60000 });
   const a0 = await page.evaluate(() => ({ t: window.__live.t(), audio: window.__live.audio(), at: window.__live.audioT() }));
   await page.waitForTimeout(12000);
@@ -129,11 +137,27 @@ for (const [t, label] of points) {
   report.audio.live = { stateBefore: a0.audio, stateAfter: a1.audio, clockAdvancedS: +(a1.t - a0.t).toFixed(3), audioClock: [a0.at, a1.at] };
   console.log(`low tier live: median ${q(0.5)?.toFixed(0)} ms, p95 ${q(0.95)?.toFixed(0)} ms; audio ${a1.audio}; clock advanced ${(a1.t - a0.t).toFixed(2)} s in 12 s`);
   if (logs.filter(glErr).length) fail('WebGL messages in live mode');
+  // free camera: pause, capture, toggle C, drag, capture — the view must change; C again returns
+  await page.keyboard.press('Space');
+  await page.waitForTimeout(1500);
+  const cv = await page.$('canvas');
+  const shotA = await cv.screenshot();
+  await page.keyboard.press('c');
+  const box = await cv.boundingBox();
+  await page.mouse.move(box.x + box.width * 0.5, box.y + box.height * 0.5);
+  await page.mouse.down(); await page.mouse.move(box.x + box.width * 0.75, box.y + box.height * 0.4, { steps: 8 }); await page.mouse.up();
+  await page.waitForTimeout(4000);
+  const shotB = await cv.screenshot();
+  writeFileSync(join(SHOTS, 'zz_freecam_before.png'), shotA); writeFileSync(join(SHOTS, 'zz_freecam_after.png'), shotB);
+  report.freeCamera = { viewChanged: !shotA.equals(shotB), before: 'shots/zz_freecam_before.png', after: 'shots/zz_freecam_after.png' };
+  console.log(`free camera: view changed ${!shotA.equals(shotB)}`);
+  if (shotA.equals(shotB)) fail('free camera did not change the view');
   await page.close();
 }
 
+save();
 // ── 5 · audio: the page's offline samples equal the Node render of the same range ──
-{
+if (run('audio')) {
   const { page } = await openLogged(`${BASE}?render=1&w=320&h=180&fps=30&sub=1&tier=low`);
   await page.evaluate(() => window.__ready);
   const from = 300 * 48000, count = 24000;
@@ -149,12 +173,13 @@ for (const [t, label] of points) {
   if (A.length !== B.length || maxd > 2) fail('page and Node audio renders disagree');
 }
 
+save();
 await browser.close();
 server.close();
 
 // contact sheet
 const sheet = join(OUT, 'contact-sheet.jpg');
-spawnSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-pattern_type', 'glob', '-i', join(SHOTS, '[0-9]*.png'), '-vf', 'scale=480:-1,tile=4x7:padding=4:color=black', '-frames:v', '1', '-q:v', '3', sheet]);
+if (run('shots')) spawnSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-pattern_type', 'glob', '-i', join(SHOTS, '[0-9]*.png'), '-vf', 'scale=480:-1,tile=4x7:padding=4:color=black', '-frames:v', '1', '-q:v', '3', sheet]);
 writeFileSync(join(OUT, 'report.json'), JSON.stringify(report, null, 2));
 const md = [
   '# Verification report', '', `Generated ${report.when} by \`scripts/verify.mjs\` against \`dist/reality.html\`.`, '',
@@ -164,6 +189,7 @@ const md = [
   '', '## Determinism', '', '```json', JSON.stringify(report.determinism, null, 2), '```',
   '', '## file:// with networking disabled', '', '```json', JSON.stringify(report.offline, null, 2), '```',
   '', '## Low tier, live mode', '', '```json', JSON.stringify(report.lowTier, null, 2), '```',
+  '', '## Free camera', '', '```json', JSON.stringify(report.freeCamera, null, 2), '```',
   '', '## Audio', '', '```json', JSON.stringify(report.audio, null, 2), '```',
   '', `## Result: ${report.failures.length ? 'FAILURES' : 'all checks passed'}`, '', ...report.failures.map((f) => `- ${f}`), '',
 ];

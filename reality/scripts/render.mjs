@@ -10,7 +10,7 @@
 // Requires: `npm run build` (renders dist/reality.html, the same file that ships) and ffmpeg on PATH.
 import { createServer } from 'node:http';
 import { spawn, spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, writeFileSync, renameSync, statSync, createReadStream } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync, renameSync, statSync, createReadStream, rmSync, readdirSync } from 'node:fs';
 import { join, resolve, extname, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { launch } from './browser.mjs';
@@ -83,16 +83,23 @@ const RGB2YUV = 'vflip,scale=out_color_matrix=bt709:out_range=tv:flags=accurate_
 
 async function renderRange(f0, f1) {
   mkdirSync(join(WORK, 'segments'), { recursive: true });
+  // locks left by an interrupted run (pass --clear-locks when no other render process is running)
+  if (flag('clear-locks')) for (const f of readdirSync(join(WORK, 'segments'))) if (f.endsWith('.lock')) rmSync(join(WORK, 'segments', f));
   const { browser, page, info, port, errors } = await openPage();
   console.log(`render ${W}×${H} @ ${FPS} fps, ${SUB} sub-frame(s), tier ${info.tier}, frames ${f0}–${f1 - 1} of ${info.frames}`);
   const segs = [];
   for (let s = Math.floor(f0 / SEG_FRAMES) * SEG_FRAMES; s < f1; s += SEG_FRAMES) segs.push([Math.max(s, f0), Math.min(s + SEG_FRAMES, f1)]);
-  const todo = segs.filter(([a, b]) => !existsSync(join(WORK, 'segments', `seg_${String(a).padStart(6, '0')}_${b}.mp4`)));
+  const segName = ([a, b]) => join(WORK, 'segments', `seg_${String(a).padStart(6, '0')}_${b}.mp4`);
+  const todo = segs.filter((sg) => !existsSync(segName(sg)));
   const total = todo.reduce((n, [a, b]) => n + b - a, 0);
   console.log(`${segs.length} segment(s), ${segs.length - todo.length} already done, ${total} frames to render`);
   let done = 0; const t0 = Date.now(); let last = 0; let tRender = 0, tPost = 0;
   for (const [a, b] of todo) {
-    const name = join(WORK, 'segments', `seg_${String(a).padStart(6, '0')}_${b}.mp4`);
+    const name = segName([a, b]);
+    // several render processes may share one work dir: claim a segment with an exclusive lock file
+    const lock = name + '.lock';
+    if (existsSync(name)) { done += b - a; continue; }
+    try { writeFileSync(lock, String(process.pid), { flag: 'wx' }); } catch { done += b - a; continue; }
     const tmp = name + '.part.mp4';
     const enc = spawn('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgba', '-s', `${W}x${H}`, '-r', String(FPS), '-i', '-',
       '-vf', RGB2YUV, ...X264(CRF), '-threads', '2', '-an', tmp], { stdio: ['pipe', 'inherit', 'inherit'] });
@@ -120,6 +127,7 @@ async function renderRange(f0, f1) {
     enc.stdin.end();
     await encDone;
     renameSync(tmp, name);
+    rmSync(lock, { force: true });
   }
   process.stdout.write('\n');
   await browser.close();
