@@ -14,7 +14,8 @@
     "verify": "node scripts/verify.mjs",
     "render": "node scripts/render.mjs",
     "render:share": "node scripts/render.mjs --share-only",
-    "render:test": "node scripts/render.mjs --test-clips"
+    "render:test": "node scripts/render.mjs --test-clips",
+    "audio:check": "node scripts/run-ts.mjs scripts/audio-check.ts"
   },
   "dependencies": {
     "inter-ui": "^4.1.1",
