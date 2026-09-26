@@ -6,7 +6,7 @@ import { resolve } from 'node:path';
 // Virtual modules that embed fonts as base64 so the page makes zero network requests,
 // whether served from dist/ or opened as dist/reality.html from file://.
 function embeddedAssets(): Plugin {
-  const katexDir = resolve(__dirname, 'node_modules/katex/dist');
+  const katexDir = resolve(import.meta.dirname, 'node_modules/katex/dist');
   const ids = ['virtual:katex-css', 'virtual:fonts'];
   return {
     name: 'reality-embedded-assets',
@@ -27,7 +27,7 @@ function embeddedAssets(): Plugin {
         return `export default ${JSON.stringify(css)};`;
       }
       if (id === '\0virtual:fonts') {
-        const inter = readFileSync(resolve(__dirname, 'node_modules/inter-ui/variable/InterVariable.woff2')).toString('base64');
+        const inter = readFileSync(resolve(import.meta.dirname, 'node_modules/inter-ui/variable/InterVariable.woff2')).toString('base64');
         return `export const INTER_WOFF2 = "data:font/woff2;base64,${inter}";`;
       }
       return null;

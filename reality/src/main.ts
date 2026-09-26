@@ -2,7 +2,7 @@
 // render API (?render=1) used by scripts/render.mjs.
 import * as THREE from 'three';
 import { INTER_WOFF2 } from 'virtual:fonts';
-import { DURATION } from './content/chapters';
+import { DURATION, CHAPTERS } from './content/chapters';
 import { Clock } from './engine/clock';
 import { Director } from './engine/director';
 import { Overlay } from './engine/overlay';
@@ -35,6 +35,7 @@ declare global {
   interface Window {
     __ready: Promise<unknown>;
     __renderFrame: (i: number, capture?: boolean) => Promise<string | null>;
+    __renderFrameTo: (i: number, url: string) => Promise<[number, number]>;
     __renderAt: (t: number) => void;
     __renderAudio: (fromSample: number, count: number, sampleRate: number) => string;
     __audioInfo: () => unknown;
@@ -63,9 +64,12 @@ async function boot() {
     throw new Error('no float render targets');
   }
   const detected = detectTier(glTest);
-  const tier: Tier = RENDER ? 'ultra' : TIER_PARAM ?? detected;
+  // render mode is Ultra unless a tier is requested explicitly (CPU-only renders use High)
+  const tier: Tier = RENDER ? TIER_PARAM ?? 'ultra' : TIER_PARAM ?? detected;
   const quality: Quality = makeQuality(tier, RENDER ? 1 : window.devicePixelRatio);
   if (RENDER) quality.pixelRatio = 1;
+  if (params.has('scale')) quality.renderScale = Math.max(0.25, Math.min(1, Number(params.get('scale')) || 1)); // scene resolution (overlay stays native)
+  if (params.has('msaa')) quality.msaa = Math.max(0, Math.min(8, Number(params.get('msaa')) || 0)); // override (e.g. software renders)
   if (ui) (ui.gate.querySelector('option[value=auto]') as HTMLOptionElement).textContent = `Auto (${detected})`;
 
   const renderer = new THREE.WebGLRenderer({ canvas, context: glTest, antialias: false, alpha: false, preserveDrawingBuffer: RENDER || STILL });
@@ -167,11 +171,21 @@ async function boot() {
       gl.readPixels(0, 0, W, H, gl.RGBA, gl.UNSIGNED_BYTE, buf);
       return await toBase64(buf);
     };
+    // binary hand-off for the offline renderer: POST raw RGBA (bottom-up rows) to a local endpoint
+    window.__renderFrameTo = async (i: number, url: string) => {
+      const t0 = performance.now();
+      renderFrame(i / FPS, SUB, FPS);
+      gl.readPixels(0, 0, W, H, gl.RGBA, gl.UNSIGNED_BYTE, buf);
+      const t1 = performance.now();
+      const res = await fetch(url, { method: 'POST', body: buf });
+      if (!res.ok) throw new Error('frame sink refused frame ' + i + ': ' + res.status);
+      return [t1 - t0, performance.now() - t1];
+    };
     window.__renderAt = (t: number) => { renderFrame(t, 1, FPS); gl.finish(); };
     window.__pixelsAt = (x, y, w, h) => { const b = new Uint8Array(w * h * 4); gl.readPixels(x, y, w, h, gl.RGBA, gl.UNSIGNED_BYTE, b); return Array.from(b); };
     window.__renderAudio = (from: number, count: number, sr: number) => audio.renderOfflineBase64(from, count, sr);
     window.__audioInfo = () => audio.info();
-    window.__info = { duration: DURATION, fps: FPS, w: W, h: H, sub: SUB, frames: Math.ceil(DURATION * FPS), tier: quality.tier, seed: SEED };
+    window.__info = { duration: DURATION, fps: FPS, w: W, h: H, sub: SUB, frames: Math.ceil(DURATION * FPS), tier: quality.tier, seed: SEED, chapters: CHAPTERS.map((c) => ({ n: c.n, key: c.key, start: c.start, end: c.end })) };
     readyResolve(window.__info);
     if (STILL) {
       const t = START_T ?? 0;

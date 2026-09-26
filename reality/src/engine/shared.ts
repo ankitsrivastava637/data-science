@@ -87,6 +87,7 @@ export const EXTRA_JOBS: ExtraJob[] = [
   { key: 'density', job: 'density', args: (s) => [s.seed] },
   { key: 'zeta', job: 'zeta', args: () => [] },
   { key: 'web', job: 'web', args: (s) => [webN, s.seed] },
+  { key: 'protonNoise', job: 'protonNoise', args: (s) => [s.seed] },
 ];
 let webN = 64;
 export function setWebResolution(n: number) { webN = n; }

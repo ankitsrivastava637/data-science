@@ -14,14 +14,14 @@ precision highp float;
 in vec2 vUv; out vec4 o;
 uniform vec3 camPos; uniform mat3 camRot; uniform float tanHalf; uniform float aspect;
 uniform float time; uniform vec3 q0, q1, q2, J; uniform vec4 sea[16]; uniform float uSteps; uniform float uExposure;
-uniform float uTube; uniform float uLumps;
+uniform float uTube; uniform float uLumps; uniform highp sampler3D tNoise;
 ${COMMON}
 float segDist(vec3 p, vec3 a, vec3 b){ vec3 ab = b - a; float t = clamp(dot(p - a, ab)/dot(ab, ab), 0.0, 1.0); return length(p - a - ab*t); }
 void main(){
   vec2 ndc = vUv*2.0 - 1.0;
   vec3 rd = normalize(camRot * vec3(ndc.x*tanHalf*aspect, ndc.y*tanHalf, -1.0));
   vec3 ro = camPos;
-  float R = 1.7;
+  float R = 1.5; // beyond this the envelope, tube and cores are all below 1e-3
   float b = dot(ro, rd), c = dot(ro, ro) - R*R, h = b*b - c;
   if (h <= 0.0) { o = vec4(0,0,0,1); return; }
   h = sqrt(h);
@@ -30,14 +30,26 @@ void main(){
   float jit = float(uhash3(uvec3(uvec2(gl_FragCoord.xy), 11u)) & 0xffffu)/65535.0;
   vec3 acc = vec3(0.0); float tr = 1.0;
   vec3 c0 = vec3(0.95, 0.52, 0.42), c1 = vec3(0.52, 0.86, 0.56), c2 = vec3(0.50, 0.60, 0.98);
+  // sea pairs that pass within 0.12 of this ray (the rest contribute < 1e-5): test once per pixel
+  int seaMask = 0;
+  for (int s = 0; s < 16; s++) {
+    vec4 sp = sea[s];
+    if (sp.w <= 0.0) continue;
+    vec3 w = sp.xyz - ro; float tc = dot(w, rd);
+    if (length(w - rd*tc) < 0.12) seaMask |= (1 << s);
+  }
   for (int i = 0; i < 96; i++) {
     if (float(i) >= uSteps) break;
     vec3 p = ro + rd*(t0 + (float(i) + jit)*dt);
     float r = length(p);
     float env = exp(-pow(r/0.86, 2.0)*1.6);
     // lumpy gluon action density, slowly evolving
-    float n = fbm3(p*3.1 + vec3(0.0, 0.0, time*0.35) + vec3(sin(time*0.21), cos(time*0.17), 0.0));
-    float lump = pow(max(0.0, n - 0.42)*3.2, 2.0) * env * uLumps;
+    float lump = 0.0;
+    if (env * uLumps > 0.004) {
+      // baked tileable fBm (8-unit period), sampled along the same drifting coordinates
+      float n = texture(tNoise, (p*3.1 + vec3(0.0, 0.0, time*0.35) + vec3(sin(time*0.21), cos(time*0.17), 0.0)) / 8.0).r;
+      lump = pow(max(0.0, n - 0.42)*3.2, 2.0) * env * uLumps;
+    }
     // Y-shaped flux tube
     float d = min(segDist(p, q0, J), min(segDist(p, q1, J), segDist(p, q2, J)));
     float tube = exp(-d*d/0.012) * uTube;
@@ -46,8 +58,8 @@ void main(){
     vec3 em = vec3(0.95, 0.66, 0.38) * lump * 0.9 + vec3(0.85, 0.80, 0.70) * tube * 0.9 + (c0*k0 + c1*k1 + c2*k2) * 5.0;
     // sea pairs
     for (int s = 0; s < 16; s++) {
+      if ((seaMask & (1 << s)) == 0) continue;
       vec4 sp = sea[s];
-      if (sp.w <= 0.0) continue;
       float e = exp(-dot(p - sp.xyz, p - sp.xyz)/0.0012) * sp.w;
       em += vec3(0.75, 0.8, 0.95) * e * 2.0;
     }
@@ -64,13 +76,19 @@ export class ProtonVolume {
   mat: THREE.ShaderMaterial;
   pass: FullscreenPass;
   comp: FullscreenPass;
-  constructor(public scale = 0.5) {
+  noise: THREE.Data3DTexture;
+  constructor(noise: { N: number; data: Uint8Array }, public scale = 0.5) {
+    this.noise = new THREE.Data3DTexture(noise.data, noise.N, noise.N, noise.N);
+    this.noise.format = THREE.RedFormat; this.noise.type = THREE.UnsignedByteType;
+    this.noise.minFilter = this.noise.magFilter = THREE.LinearFilter;
+    this.noise.wrapS = this.noise.wrapT = this.noise.wrapR = THREE.RepeatWrapping;
+    this.noise.unpackAlignment = 1; this.noise.needsUpdate = true;
     this.rt = hdrTarget(2, 2, 0, false);
     const sea = Array.from({ length: 16 }, () => new THREE.Vector4());
     this.mat = shaderMat(FRAG, {
       camPos: { value: new THREE.Vector3() }, camRot: { value: new THREE.Matrix3() }, tanHalf: { value: 0.4 }, aspect: { value: 16 / 9 },
       time: { value: 0 }, q0: { value: new THREE.Vector3() }, q1: { value: new THREE.Vector3() }, q2: { value: new THREE.Vector3() }, J: { value: new THREE.Vector3() },
-      sea: { value: sea }, uSteps: { value: 56 }, uExposure: { value: 1 }, uTube: { value: 1 }, uLumps: { value: 1 },
+      sea: { value: sea }, uSteps: { value: 56 }, uExposure: { value: 1 }, uTube: { value: 1 }, uLumps: { value: 1 }, tNoise: { value: this.noise },
     });
     this.pass = new FullscreenPass(this.mat);
     this.comp = new FullscreenPass(shaderMat(`precision highp float; in vec2 vUv; out vec4 o; uniform sampler2D t; uniform float w;
@@ -120,7 +138,7 @@ export class ProtonVolume {
     this.comp.material.uniforms.w.value = weight;
     this.comp.render(r, target);
   }
-  dispose() { this.rt.dispose(); this.mat.dispose(); this.comp.material.dispose(); }
+  dispose() { this.rt.dispose(); this.mat.dispose(); this.comp.material.dispose(); this.noise.dispose(); }
 }
 
 /** Fermat (Steiner) point of a triangle — where a minimal Y-shaped string network meets. */

@@ -16,9 +16,8 @@ const eyeWidthMm = logTrack([[0, 23], [10.5, 9.0, 'sineInOut'], [16.4, 2.2, 'cub
 const eyeFov = track([[0, 28], [10, 26], [16.4, 16, 'sineIn']]);
 const retinaWidthMm = logTrack([[16, 30], [22, 11], [28.5, 1.3, 'sineInOut'], [34, 0.34, 'sineInOut'], [44, 0.15, 'sineOut']]);
 const FUNDUS_FOV = 50;
-export const EXPOSURE_START = 45, EXPOSURE_LEN = 13, EXPOSURE_POW = 1.7;
-export const tauOf = (lt: number) => Math.pow(clamp((lt - EXPOSURE_START) / EXPOSURE_LEN), EXPOSURE_POW);
-export const tauInv = (x: number) => EXPOSURE_START + EXPOSURE_LEN * Math.pow(Math.max(0, x), 1 / EXPOSURE_POW);
+import { EXPOSURE_START, EXPOSURE_LEN, EXPOSURE_POW, tauOf, tauInv } from '../../content/cues';
+export { EXPOSURE_START, EXPOSURE_LEN, EXPOSURE_POW, tauOf, tauInv };
 
 export function ch1Scale(lt: number): number {
   return lt < 16.2 ? Math.log10(eyeWidthMm(lt) / 1000) : Math.log10(retinaWidthMm(lt) / 1000);

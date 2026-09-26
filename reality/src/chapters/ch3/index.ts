@@ -22,13 +22,13 @@ const az = track([[-2, Math.PI / 2 + 0.55], [46, Math.PI / 2 + 1.6]]);
 const el = track([[-2, 0.12], [20, 0.35], [46, 0.25]]);
 const dirAt = (lt: number, out = new THREE.Vector3()) => out.set(Math.cos(el(lt)) * Math.sin(az(lt)), Math.sin(el(lt)), Math.cos(el(lt)) * Math.cos(az(lt)));
 
-export const SLIT = { simStart: 66.5, simEnd: 78.5, detStart: 74.5, detEnd: 95 };
-export const detTau = (lt: number) => clamp((lt - SLIT.detStart) / (SLIT.detEnd - SLIT.detStart));
+import { SLIT, detTau, ENT_START, ENT_RATE, makeEntanglementRecord, type EntRecord } from '../../content/cues';
+export { SLIT, detTau, ENT_START, ENT_RATE };
 
 export default function create(ctx: EngineContext): ChapterInstance {
   const { shared, quality } = ctx;
   const orbital = new OrbitalVolume(quality.tier === 'low' ? 0.4 : 0.5);
-  const proton = new ProtonVolume(quality.tier === 'low' ? 0.4 : 0.5);
+  const proton = new ProtonVolume(shared.extra.protonNoise, quality.tier === 'low' ? 0.4 : 0.5);
   const field = new FieldLattice(ctx.seed);
   const fieldScene = new THREE.Scene(); fieldScene.add(field.group);
   const slit = new SlitView(shared.slit, shared.detections);
@@ -245,21 +245,8 @@ function drawPhasors(g: CanvasRenderingContext2D, W: number, H: number, a: numbe
   g.globalAlpha = 1;
 }
 
-// ── entanglement record (2D overlay) ─────────────────────────────────────
-interface EntRecord { a: number[]; b: number[]; thetaB: number[] }
-function makeEntanglementRecord(seed: number): EntRecord {
-  const rng = new Rng(seed, 1301);
-  const a: number[] = [], b: number[] = [], thetaB: number[] = [];
-  for (let i = 0; i < 64; i++) {
-    const th = i < 18 ? 0 : Math.PI / 3; // detector B turned by 60° for the later pairs
-    const A = rng.float() < 0.5 ? 1 : -1;
-    // singlet: P(B = −A) = cos²(θ/2)
-    const B = rng.float() < Math.cos(th / 2) ** 2 ? -A : A;
-    a.push(A); b.push(B); thetaB.push(th);
-  }
-  return { a, b, thetaB };
-}
-export const ENT_START = 109.3, ENT_RATE = 4.0; // pairs per second
+// ── entanglement record: see content/cues.ts ──
+
 function drawEntanglement(g: CanvasRenderingContext2D, W: number, H: number, alpha: number, lt: number, rec: EntRecord) {
   if (alpha <= 0.002) return;
   const u = H / 1080;

@@ -37,7 +37,7 @@ Fetching web pages was **blocked** by the build environment's network policy (ar
 | C2.7 | A covalent bond is a build-up of shared electron density between nuclei. | Density rendered as a sum of atomic densities (promolecule), an approximation. | **ESTABLISHED** | TXT | Approximate density, not a quantum-chemistry calculation. |
 | C2.8 | Electrons do not orbit nuclei like planets; the planetary picture was abandoned a century ago. | The familiar atom icon dissolves into Born-rule samples. | **ESTABLISHED** | TXT |  |
 | C2.9 | A hydrogen orbital is ψ_nlm = R_nl(r)Y_lm(θ,φ); \|ψ\|² gives the probability density of finding the electron. | Exact hydrogen \|ψ\|² raymarched; point samples drawn from \|ψ\|². | **ESTABLISHED** | TXT, TEST |  |
-| C2.10 | A stationary state’s \|ψ\|² does not change in time; a superposition of two energies oscillates at frequency (E₂−E₁)/h. | (2s+2p)/√2 superposition sloshing (slowed ~10¹⁵×). | **ESTABLISHED** | TXT |  |
+| C2.10 | A stationary state’s \|ψ\|² does not change in time; a superposition of two energies oscillates at frequency (E₂−E₁)/h. | (1s+2p)/√2 superposition sloshing (slowed ~10¹⁶×); phases shown relative to the 1s term. | **ESTABLISHED** | TXT |  |
 
 ### Chapter 3 · Quantum
 
@@ -149,7 +149,7 @@ Fetching web pages was **blocked** by the build environment's network policy (ar
 | C10.5 | Looking farther means looking earlier: light from distant galaxies left them long ago. | Galaxies coloured and shaped by look-back time (younger, bluer, more irregular farther out). | **ESTABLISHED** | S1, TEST | Galaxy appearance evolution schematic. |
 | C10.6 | The cosmic web grew by gravity from tiny initial fluctuations. | Zel'dovich approximation (first-order Lagrangian perturbation theory) on a Gaussian random field — not a full N-body simulation. | **ESTABLISHED** | S25 | Power spectrum schematic. |
 | C10.7 | ΛCDM with Planck 2018 parameters: H₀ = 67.4 km/s/Mpc, Ωm = 0.315, age 13.79 Gyr. | Distances and ages computed from these parameters. | **ESTABLISHED** | S1, TEST |  |
-| C10.8 | Three different distances: light-travel distance (≤13.8 Gly), Hubble radius c/H₀ (≈14.5 Gly) and particle horizon (≈46 Gly comoving). | Three labelled shells. | **ESTABLISHED** | S24, TEST |  |
+| C10.8 | Three different distances: light-travel distance (≤13.8 Gly), Hubble radius c/H₀ (≈14.5 Gly) and particle horizon (≈46 Gly comoving). | Hubble sphere, CMB surface and particle horizon drawn as spheres at today’s (comoving) distances; the light-travel time is stated as a number, because it is not a location. | **ESTABLISHED** | S24, TEST |  |
 | C10.9 | The observable universe is a horizon — the limit of what light has had time to bring us — not a wall or the edge of the universe. | Horizon shell rendered soft and open. | **ESTABLISHED** | S24 |  |
 | C10.10 | The cosmic microwave background is light released ~380,000 years after the Big Bang (z ≈ 1100). | Outermost shell; anisotropy pattern illustrative, not the Planck map. | **ESTABLISHED** | S1, TXT |  |
 
@@ -206,6 +206,8 @@ Fetching web pages was **blocked** by the build environment's network policy (ar
 | E9.8 | `\frac{\partial L}{\partial \theta}=0\;\Longrightarrow\;\frac{d}{dt}\,\frac{\partial L}{\partial\dot\theta}=0` | Rotational symmetry ⇒ conserved angular momentum. | C9.18 |
 | E10.1 | `H(z)=H_0\sqrt{\Omega_m(1+z)^3+\Omega_\Lambda}` | Flat ΛCDM expansion rate (radiation included in the code). | C10.7 |
 | E10.2 | `\mathbf x(\mathbf q,t)=\mathbf q-D(t)\,\nabla_{\mathbf q}\Phi(\mathbf q)` | Zel'dovich approximation. | C10.6 |
+| E11.1 | `a(t)\propto e^{Ht}` | Near-exponential expansion during inflation (H nearly constant). | C11.1 |
+| E11.2 | `z_1^{5}+z_2^{5}=1` | The complex curve (a real 2D surface) in Hanson’s picture of the quintic Calabi–Yau. | C11.6 |
 
 ## Sources
 

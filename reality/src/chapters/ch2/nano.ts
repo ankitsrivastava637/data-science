@@ -290,6 +290,19 @@ export class DensityLayer {
       tDens: { value: this.tex }, boxC: { value: center.clone() }, boxH: { value: half }, uIso: { value: 0 }, uW: { value: 1 }, uSteps: { value: 72 }, uLevel: { value: 0.07 },
     }, { blending: THREE.AdditiveBlending, transparent: true });
     this.pass = new FullscreenPass(this.mat);
+    this.rt = hdrTarget(2, 2, 0, false);
+    this.comp = new FullscreenPass(shaderMat(`precision highp float; in vec2 vUv; out vec4 o; uniform sampler2D t;
+      void main(){ o = vec4(texture(t, vUv).rgb, 1.0); }`, { t: { value: this.rt.texture } }, { blending: THREE.AdditiveBlending, transparent: true }));
   }
-  dispose() { this.tex.dispose(); this.mat.dispose(); }
+  rt: THREE.WebGLRenderTarget;
+  comp: FullscreenPass;
+  /** the soft volume is marched at half resolution, then added into the target */
+  render(r: THREE.WebGLRenderer, target: THREE.WebGLRenderTarget, scale = 0.5) {
+    const W = Math.max(2, Math.round(target.width * scale)), H = Math.max(2, Math.round(target.height * scale));
+    if (this.rt.width !== W || this.rt.height !== H) this.rt.setSize(W, H);
+    r.setRenderTarget(this.rt); r.setClearColor(0x000000, 1); r.clear(true, false, false);
+    this.pass.render(r, this.rt);
+    this.comp.render(r, target);
+  }
+  dispose() { this.tex.dispose(); this.mat.dispose(); this.rt.dispose(); this.comp.material.dispose(); }
 }

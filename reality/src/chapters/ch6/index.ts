@@ -8,8 +8,8 @@ import { BASES, DEMO_MRNA, THREE_LETTER, complement, dnaCoding, translateCodon }
 import { Rng } from '../../engine/prng';
 
 const BASE_COL: Record<string, string> = { A: '#e8a36b', U: '#7fb6e6', T: '#7fb6e6', G: '#9fd18e', C: '#d99ad1' };
-export const TX = { start: 2, end: 12 };          // transcription
-export const TL = { start: 14.5, per: 1.3 };      // translation: one codon per 1.3 s
+import { TX, TL } from '../../content/cues';
+export { TX, TL };
 
 export default function create(ctx: EngineContext): ChapterInstance {
   const codons = DEMO_MRNA.match(/.{3}/g)!;

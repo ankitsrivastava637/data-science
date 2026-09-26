@@ -246,7 +246,7 @@ export default function create(ctx: EngineContext): ChapterInstance {
       solidRT.setSize(W, H);
       if (w.nuc > 0.001) solidRT.draw(r, nucScene, cams.nm, target, w.nuc);
       if (w.atom > 0.001) { r.localClippingEnabled = true; solidRT.draw(r, atomScene, cams.A, target, w.atom); r.localClippingEnabled = false; }
-      if (w.dens > 0.001) density.pass.render(r, target);
+      if (w.dens > 0.001) density.render(r, target);
       if (w.orb > 0.001) orbital.render(r, target, w.orb);
       if (w.born > 0.001 || w.ghost > 0.001) { r.setRenderTarget(target); r.render(orbScene, cams.a0); }
     },
