@@ -24,7 +24,7 @@ const EARTH_ROT = -2.2;
 // log10(field width / m) against local time; each segment eases in and out, so the zoom lingers at
 // every rung of the ladder (room, land, Earth, Moon, planets, stars, Galaxy, Local Group, web, horizon).
 export const sTrack = track([[0, 0.3], [4.2, 1.2], [8, 4.4], [11, 6.95], [12.5, 7.15], [15.5, 9.25], [16.5, 9.35], [19.5, 12.9], [20.5, 13.0], [23.5, 17.2], [24.5, 17.35], [27.5, 21.05], [28.8, 21.3], [31, 23.0], [31.8, 23.1], [34, 25.15], [40, 25.3], [46, 26.35], [52, 27.05], [61, 27.1]]);
-const el = track([[0, 0.28], [3.4, 0.36], [5.6, 1.45], [9.4, 1.45], [12.2, 0.6], [15.5, 0.45], [19.5, 0.62], [23, 0.5], [26.5, 0.95], [29, 0.8], [31, 0.6], [33.5, 1.05], [40, 1.0], [45, 0.4], [61, 0.3]]);
+const el = track([[0, 0.28], [3.4, 0.36], [5.6, 1.45], [9.4, 1.45], [12.2, 0.75], [15.5, 0.95], [19.5, 0.62], [23, 0.5], [26.5, 0.95], [29, 0.8], [31, 0.6], [33.5, 1.05], [40, 1.0], [45, 0.4], [61, 0.3]]);
 const az = track([[0, 0.2], [61, 2.2]]);
 
 function fadeS(s: number, a0: number, a1: number, b0: number, b1: number) {
@@ -90,13 +90,16 @@ void main(){
   // clouds (procedural, illustrative): denser near the equator and in the storm tracks; kept clear
   // over the site the camera descends to
   float lat = (vUv2.y - 0.5) * 3.14159;
-  vec2 cuv = vUv2*vec2(9.0, 4.5) + vec2(uT*0.003, 0.0);
+  vec2 cuv = vUv2*vec2(10.0, 5.0) + vec2(uT*0.003, 0.0);
   float band = 0.35*exp(-pow(lat/0.14, 2.0)) + 0.3*smoothstep(0.55, 1.0, abs(lat));
-  float cf = fbm(cuv + fbm(cuv*2.3 + 3.0)*0.9 + vec2(fbm(cuv*6.0)*0.12));
-  float cl = smoothstep(0.6 - band*0.25, 0.82, cf);
+  vec2 wv = vec2(fbm(cuv*1.7 + 3.0), fbm(cuv*1.7 + 8.0)) - 0.5;
+  float cf = fbm(cuv + wv*vec2(1.6, 0.7));                  // large systems, sheared along latitude
+  float fine = fbm(cuv*7.0 + wv*3.0) - 0.5;                   // eroded, cellular edges
+  float cl = smoothstep(0.56 - band*0.22, 0.66, cf + fine*0.32);
+  cl *= 0.55 + 0.45*smoothstep(0.3, 0.7, fbm(cuv*15.0 + 2.0)); // texture inside the decks
   cl *= smoothstep(0.04, 0.2, distance(normalize(vW), uSite));
   cl *= 1.0 - 0.9*uNear;
-  alb = mix(alb, vec3(0.78), cl*0.8);
+  alb = mix(alb, vec3(0.74), cl*0.85);
   float ndl = dot(n, normalize(sunDir));
   float day = smoothstep(-0.08, 0.2, ndl);
   vec3 col = alb * (0.015 + 1.35*max(0.0, ndl));
@@ -107,7 +110,7 @@ void main(){
   // specular glint on water
   vec3 v = normalize(cameraPosition - vW);
   vec3 h = normalize(normalize(sunDir) + v);
-  col += (1.0 - land) * (1.0 - cl) * vec3(1.0, 0.9, 0.75) * pow(max(0.0, dot(n, h)), 90.0) * 0.5 * day;
+  col += (1.0 - land) * (1.0 - cl) * vec3(1.0, 0.9, 0.75) * (pow(max(0.0, dot(n, h)), 700.0) * 0.4 + pow(max(0.0, dot(n, h)), 80.0) * 0.025) * day;
   // atmosphere rim
   float rim = pow(1.0 - max(0.0, dot(n, v)), 3.0);
   col += vec3(0.25, 0.45, 0.9) * rim * (0.08 + 0.9*smoothstep(-0.25, 0.4, ndl)) * 0.6 * (1.0 - 0.8*uNear);
@@ -135,8 +138,8 @@ void main(){
   vec3 wdir = normalize(uUpW + (dot(p, uEast)*uEastW + dot(p, uNorth)*uNorthW) / 6371000.0);
   vec3 w = wdir * 6.371;
   // back to the sphere's texture coordinates (undo the globe's rotation about y)
-  float cr = cos(-uRot), sr = sin(-uRot);
-  vec3 lo = vec3(cr*wdir.x + sr*wdir.z, wdir.y, -sr*wdir.x + cr*wdir.z);
+  float rc = cos(-uRot), rs = sin(-uRot);
+  vec3 lo = vec3(rc*wdir.x + rs*wdir.z, wdir.y, -rs*wdir.x + rc*wdir.z);
   vec2 uv = vec2(fract(atan(lo.z, -lo.x) / 6.2831853), 1.0 - acos(clamp(lo.y, -1.0, 1.0)) / 3.1415927);
   vec3 base = texture(tDay, uv).rgb * landDetail(w);
   // district-scale variation (1–10 km), mean ≈ 1
@@ -400,7 +403,7 @@ export default function create(ctx: EngineContext): ChapterInstance {
   (galPts.material as THREE.ShaderMaterial).uniforms.uGain = { value: 0.26 }; galaxy.points.push(galPts); galaxy.scene.add(galPts);
   registerTarget('galaxy', makeTarget(16384, (i, d, o) => { d[o] = gm.pos[i * 3] / 15; d[o + 1] = gm.pos[i * 3 + 1] / 15; d[o + 2] = gm.pos[i * 3 + 2] / 15; d[o + 3] = gm.col[i * 3 + 2] / 1.4; }), 'unit');
   // 6 · Local Group (Mpc)
-  const lg = mkLayer('lg', MPC, (s) => fadeS(s, 22.3, 22.8, 24.1, 24.7), () => new THREE.Vector3(0.38, 0, 0.1).multiplyScalar(0.5));
+  const lg = mkLayer('lg', MPC, (s) => fadeS(s, 22.3, 22.8, 24.1, 24.7), () => new THREE.Vector3(0.765, 0.05, 0.1).normalize().multiplyScalar(0.765 * 0.5));
   {
     const mw = makeGalaxy(25000, ctx.seed + 1, 0.001);
     const m31 = makeGalaxy(30000, ctx.seed + 2, 0.0013);
@@ -537,7 +540,7 @@ export default function create(ctx: EngineContext): ChapterInstance {
       webGrowth = growth(aSc);
       webMat.uniforms.uD.value = webGrowth;
       webMat.uniforms.uProj.value = proj;
-      webMat.uniforms.uW.value = webLayer.weight;
+      webMat.uniforms.uW.value = webLayer.weight * (0.55 + 0.45 * gu); // the nearly uniform early field reads as glare at full gain
       uni.scene.traverse((o) => { const m = (o as THREE.Line).material as THREE.LineBasicMaterial | undefined; if (m && (o as THREE.Line).isLine) m.opacity = uni.weight * 0.8; });
 
       // labels

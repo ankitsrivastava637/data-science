@@ -298,6 +298,12 @@ export class Overlay {
       ctx.fillStyle = l.color ?? '#e6e0d4';
     }
     const lines = l.text.split('\n');
+    // keep every label inside the 90% title-safe area: slide it horizontally if it would overflow
+    const tw = Math.max(...lines.map((ln) => ctx.measureText(ln).width));
+    const al = l.align ?? 'left';
+    const x0 = al === 'right' ? tx - tw : al === 'center' ? tx - tw / 2 : tx;
+    const shift = Math.min(0, W * 0.95 - (x0 + tw)) + Math.max(0, W * 0.05 - x0);
+    tx += shift;
     lines.forEach((ln, i) => ctx.fillText(ln, tx, y + i * fs * 1.3));
     ctx.shadowBlur = 0;
     ctx.globalAlpha = 1;
@@ -424,8 +430,8 @@ const LY = 9.4607304725808e15;
 const AU = 149597870700;
 export function formatLength(m: number, approx = false): string {
   const f = (v: number, unit: string) => {
-    const digits = approx ? (v >= 100 ? 0 : v >= 10 ? 0 : 1) : 0;
-    let s = approx ? v.toFixed(digits) : String(+v.toPrecision(3));
+    const digits = approx ? (v >= 10 ? 0 : 1) : 0;
+    let s = approx ? (v < 1 ? String(+v.toPrecision(2)) : v.toFixed(digits)) : String(+v.toPrecision(3));
     if (s.endsWith('.0')) s = s.slice(0, -2);
     return `${s} ${unit}`;
   };
@@ -436,6 +442,7 @@ export function formatLength(m: number, approx = false): string {
   if (m < 1) return f(m / 1e-3, 'mm');
   if (m < 1e3) return f(m, 'm');
   if (m < 1e9) return approx ? `${Math.round(m / 1e3).toLocaleString('en-US')} km` : f(m / 1e3, 'km');
+  if (m < 1.5e10) return f(m / 1e9, 'million km');
   if (m < 0.05 * LY) return f(m / AU, 'au');
   if (m < 1e6 * LY) return approx && m / LY >= 1000 ? `${Math.round(m / LY).toLocaleString('en-US')} ly` : f(m / LY, 'ly');
   if (m < 1e9 * LY) return f(m / LY / 1e6, 'million ly');
