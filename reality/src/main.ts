@@ -221,8 +221,9 @@ async function boot() {
         if (begun) return;
         begun = true;
         ui!.hideGate();
-        audio.start().catch((e) => console.warn('audio unavailable', e));
         clock.play();
+        // the context is created inside this gesture; once it is running, join the clock where it is now
+        audio.start().then(() => { if (clock.playing) audio.play(clock.t); }).catch((e) => console.warn('audio unavailable', e));
       },
       togglePlay: () => { if (!begun) return; clock.toggle(); },
       replay: () => { clock.seek(0); clock.play(); },

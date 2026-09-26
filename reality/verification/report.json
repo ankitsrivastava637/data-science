@@ -1,5 +1,5 @@
 {
-  "when": "2026-09-26T05:42:31.868Z",
+  "when": "2026-09-26T06:29:22.350Z",
   "environment": {
     "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
   },
@@ -489,6 +489,438 @@
           720
         ]
       }
+    },
+    {
+      "t": 4,
+      "label": "ch1 transition midpoint",
+      "file": "verification/shots/27_ch1-transition-midpoint_t4.png",
+      "ms": 21594,
+      "pageErrors": [],
+      "glMessages": [],
+      "otherConsole": [],
+      "hdr": {
+        "samples": 57600,
+        "nonFinite": 0,
+        "maxValue": 0.2294921875,
+        "size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "t": 6,
+      "label": "ch1 observer start",
+      "file": "verification/shots/28_ch1-observer-start_t6.png",
+      "ms": 22464,
+      "pageErrors": [],
+      "glMessages": [],
+      "otherConsole": [],
+      "hdr": {
+        "samples": 57600,
+        "nonFinite": 0,
+        "maxValue": 0.2496337890625,
+        "size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "t": 64,
+      "label": "ch2 transition midpoint",
+      "file": "verification/shots/29_ch2-transition-midpoint_t64.png",
+      "ms": 19275,
+      "pageErrors": [],
+      "glMessages": [],
+      "otherConsole": [],
+      "hdr": {
+        "samples": 57600,
+        "nonFinite": 0,
+        "maxValue": 5.2890625,
+        "size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "t": 66,
+      "label": "ch2 inner-scale start",
+      "file": "verification/shots/30_ch2-inner-scale-start_t66.png",
+      "ms": 14818,
+      "pageErrors": [],
+      "glMessages": [],
+      "otherConsole": [],
+      "hdr": {
+        "samples": 57600,
+        "nonFinite": 0,
+        "maxValue": 1.7978515625,
+        "size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "t": 154,
+      "label": "ch3 transition midpoint",
+      "file": "verification/shots/31_ch3-transition-midpoint_t154.png",
+      "ms": 24359,
+      "pageErrors": [],
+      "glMessages": [],
+      "otherConsole": [],
+      "hdr": {
+        "samples": 57600,
+        "nonFinite": 0,
+        "maxValue": 0.919921875,
+        "size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "t": 156,
+      "label": "ch3 quantum start",
+      "file": "verification/shots/32_ch3-quantum-start_t156.png",
+      "ms": 19122,
+      "pageErrors": [],
+      "glMessages": [],
+      "otherConsole": [],
+      "hdr": {
+        "samples": 57600,
+        "nonFinite": 0,
+        "maxValue": 0.92333984375,
+        "size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "t": 274,
+      "label": "ch4 transition midpoint",
+      "file": "verification/shots/33_ch4-transition-midpoint_t274.png",
+      "ms": 13936,
+      "pageErrors": [],
+      "glMessages": [],
+      "otherConsole": [],
+      "hdr": {
+        "samples": 57600,
+        "nonFinite": 0,
+        "maxValue": 0,
+        "size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "t": 276,
+      "label": "ch4 sensory-filter start",
+      "file": "verification/shots/34_ch4-sensory-filter-start_t276.png",
+      "ms": 12712,
+      "pageErrors": [],
+      "glMessages": [],
+      "otherConsole": [],
+      "hdr": {
+        "samples": 57600,
+        "nonFinite": 0,
+        "maxValue": 1.189453125,
+        "size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "t": 334,
+      "label": "ch5 transition midpoint",
+      "file": "verification/shots/35_ch5-transition-midpoint_t334.png",
+      "ms": 13430,
+      "pageErrors": [],
+      "glMessages": [],
+      "otherConsole": [],
+      "hdr": {
+        "samples": 57600,
+        "nonFinite": 0,
+        "maxValue": 0,
+        "size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "t": 336,
+      "label": "ch5 frequency start",
+      "file": "verification/shots/36_ch5-frequency-start_t336.png",
+      "ms": 15220,
+      "pageErrors": [],
+      "glMessages": [],
+      "otherConsole": [],
+      "hdr": {
+        "samples": 57600,
+        "nonFinite": 0,
+        "maxValue": 1.109375,
+        "size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "t": 409,
+      "label": "ch6 transition midpoint",
+      "file": "verification/shots/37_ch6-transition-midpoint_t409.png",
+      "ms": 13832,
+      "pageErrors": [],
+      "glMessages": [],
+      "otherConsole": [],
+      "hdr": {
+        "samples": 57600,
+        "nonFinite": 0,
+        "maxValue": 0,
+        "size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "t": 411,
+      "label": "ch6 life start",
+      "file": "verification/shots/38_ch6-life-start_t411.png",
+      "ms": 12902,
+      "pageErrors": [],
+      "glMessages": [],
+      "otherConsole": [],
+      "hdr": {
+        "samples": 57600,
+        "nonFinite": 0,
+        "maxValue": 0.0684814453125,
+        "size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "t": 454,
+      "label": "ch7 transition midpoint",
+      "file": "verification/shots/39_ch7-transition-midpoint_t454.png",
+      "ms": 13434,
+      "pageErrors": [],
+      "glMessages": [],
+      "otherConsole": [],
+      "hdr": {
+        "samples": 57600,
+        "nonFinite": 0,
+        "maxValue": 0,
+        "size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "t": 456,
+      "label": "ch7 spacetime start",
+      "file": "verification/shots/40_ch7-spacetime-start_t456.png",
+      "ms": 13758,
+      "pageErrors": [],
+      "glMessages": [],
+      "otherConsole": [],
+      "hdr": {
+        "samples": 57600,
+        "nonFinite": 0,
+        "maxValue": 16,
+        "size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "t": 559,
+      "label": "ch8 transition midpoint",
+      "file": "verification/shots/41_ch8-transition-midpoint_t559.png",
+      "ms": 14390,
+      "pageErrors": [],
+      "glMessages": [],
+      "otherConsole": [],
+      "hdr": {
+        "samples": 57600,
+        "nonFinite": 0,
+        "maxValue": 1.25,
+        "size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "t": 561,
+      "label": "ch8 gravity start",
+      "file": "verification/shots/42_ch8-gravity-start_t561.png",
+      "ms": 15988,
+      "pageErrors": [],
+      "glMessages": [],
+      "otherConsole": [],
+      "hdr": {
+        "samples": 57600,
+        "nonFinite": 0,
+        "maxValue": 1.2265625,
+        "size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "t": 649,
+      "label": "ch9 transition midpoint",
+      "file": "verification/shots/43_ch9-transition-midpoint_t649.png",
+      "ms": 13356,
+      "pageErrors": [],
+      "glMessages": [],
+      "otherConsole": [],
+      "hdr": {
+        "samples": 57600,
+        "nonFinite": 0,
+        "maxValue": 0,
+        "size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "t": 651,
+      "label": "ch9 mathematics start",
+      "file": "verification/shots/44_ch9-mathematics-start_t651.png",
+      "ms": 12737,
+      "pageErrors": [],
+      "glMessages": [],
+      "otherConsole": [],
+      "hdr": {
+        "samples": 57600,
+        "nonFinite": 0,
+        "maxValue": 0,
+        "size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "t": 739,
+      "label": "ch10 transition midpoint",
+      "file": "verification/shots/45_ch10-transition-midpoint_t739.png",
+      "ms": 17456,
+      "pageErrors": [],
+      "glMessages": [],
+      "otherConsole": [],
+      "hdr": {
+        "samples": 57600,
+        "nonFinite": 0,
+        "maxValue": 0,
+        "size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "t": 741,
+      "label": "ch10 cosmos start",
+      "file": "verification/shots/46_ch10-cosmos-start_t741.png",
+      "ms": 15705,
+      "pageErrors": [],
+      "glMessages": [],
+      "otherConsole": [],
+      "hdr": {
+        "samples": 57600,
+        "nonFinite": 0,
+        "maxValue": 0.8876953125,
+        "size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "t": 799,
+      "label": "ch11 transition midpoint",
+      "file": "verification/shots/47_ch11-transition-midpoint_t799.png",
+      "ms": 12169,
+      "pageErrors": [],
+      "glMessages": [],
+      "otherConsole": [],
+      "hdr": {
+        "samples": 57600,
+        "nonFinite": 0,
+        "maxValue": 0,
+        "size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "t": 801,
+      "label": "ch11 frontier start",
+      "file": "verification/shots/48_ch11-frontier-start_t801.png",
+      "ms": 13669,
+      "pageErrors": [],
+      "glMessages": [],
+      "otherConsole": [],
+      "hdr": {
+        "samples": 57600,
+        "nonFinite": 0,
+        "maxValue": 1.421875,
+        "size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "t": 824,
+      "label": "ch12 transition midpoint",
+      "file": "verification/shots/49_ch12-transition-midpoint_t824.png",
+      "ms": 13497,
+      "pageErrors": [],
+      "glMessages": [],
+      "otherConsole": [],
+      "hdr": {
+        "samples": 57600,
+        "nonFinite": 0,
+        "maxValue": 0,
+        "size": [
+          1280,
+          720
+        ]
+      }
+    },
+    {
+      "t": 826,
+      "label": "ch12 synthesis start",
+      "file": "verification/shots/50_ch12-synthesis-start_t826.png",
+      "ms": 13653,
+      "pageErrors": [],
+      "glMessages": [],
+      "otherConsole": [],
+      "hdr": {
+        "samples": 57600,
+        "nonFinite": 0,
+        "maxValue": 1.83984375,
+        "size": [
+          1280,
+          720
+        ]
+      }
     }
   ],
   "determinism": {
@@ -546,9 +978,9 @@
   "lowTier": {
     "tier": "low",
     "renderScale": 0.75,
-    "frames": 54,
-    "medianMs": 183.39999999999782,
-    "p95Ms": 849.8999999999996,
+    "frames": 45,
+    "medianMs": 216.70000000000073,
+    "p95Ms": 566.6000000000022,
     "note": "software rasteriser (SwiftShader) — no GPU in this environment"
   },
   "freeCamera": {
@@ -558,12 +990,12 @@
   },
   "audio": {
     "live": {
-      "stateBefore": "running",
+      "stateBefore": "running buffering",
       "stateAfter": "running",
-      "clockAdvancedS": 3.433,
+      "clockAdvancedS": 11.534,
       "audioClock": [
-        null,
-        null
+        300,
+        311.6193333333333
       ]
     },
     "pageVsNode": {
