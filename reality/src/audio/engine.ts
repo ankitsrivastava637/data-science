@@ -21,6 +21,7 @@ export class AudioEngine {
   private sources = new Map<number, AudioBufferSourceNode>();
   private playing = false;
   private waiting = false;
+  private waitSince = 0;
   private startT = 0;
   private startCtx = 0;
   private muted = false;
@@ -63,7 +64,8 @@ export class AudioEngine {
     this.stopSources();
     this.playing = true;
     this.startT = t;
-    this.waiting = true; // hold the picture until the first block is ready, then start both together
+    this.waiting = true; // hold the picture (≤ 1 s) until the first block is ready, then start both together
+    this.waitSince = this.ctx.currentTime;
     if (this.timer == null) this.timer = window.setInterval(() => this.pump(), 250);
     this.pump();
   }
@@ -93,7 +95,8 @@ export class AudioEngine {
     const k0 = this.blockAt(pos), k1 = this.blockAt(Math.min(DURATION, pos + 3 * BLOCK_SEC));
     for (let k = k0; k <= k1; k++) if (!this.blocks.has(k) && !this.requested.has(k)) { this.requested.add(k); this.worker!.postMessage({ type: 'block', k }); }
     if (this.waiting) {
-      if (!this.blocks.has(k0)) return;
+      // a slow machine must not freeze the picture: after 1 s the clock runs and the sound joins mid-block
+      if (!this.blocks.has(k0) && ctx.currentTime - this.waitSince < 1) return;
       this.waiting = false;
       this.startCtx = ctx.currentTime + 0.05;
     }
