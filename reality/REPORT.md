@@ -110,4 +110,17 @@ logs.
 
 ## Final render
 
-RENDER_NUMBERS
+* `reality.mp4` — 1920×1080, 30 fps, H.264 High yuv420p, BT.709, CRF 16, AAC 320 kb/s from the 48 kHz / 24-bit
+  offline soundtrack; **1.05 GB**, 25,620 frames, 854.000 s. File checks: frame count, duration, A/V start offset 0,
+  A/V length difference 0, colour tags, codec/profile, audio format and a strict full decode all pass. Loudness of
+  the encoded soundtrack (ffmpeg `ebur128`): **−14.0 LUFS integrated, −1.3 dBTP true peak, 4.2 LU range**.
+  Twelve stills extracted from the file are in `verification/final-stills/`.
+* `reality_share.mp4` — 1080p30 two-pass H.264 (230 kb/s video, AAC 96 kb/s), **34.5 MB**, 25,620 frames,
+  BT.709, clean decode. Committed to the repository.
+* Rendering took **5 h 27 min** of wall time for the frames (two cooperating processes on 4 CPU cores,
+  SwiftShader; ≈ 0.77 s per frame overall, 0.4–4 s per frame depending on the scene), plus ~20 min for audio,
+  mux and the share encode.
+* The frames came from the build frozen at render start; eight frames rendered by that build and by the final
+  `dist/reality.html` hash identically (`verification/final-render.md`).
+* `reality.mp4` is **not in git** (GitHub rejects files over 100 MB and LFS is not available here). It is in the
+  working directory of this session; regenerate it anywhere with the commands in the README.

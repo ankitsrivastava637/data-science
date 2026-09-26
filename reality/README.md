@@ -13,7 +13,7 @@ looking with. Every on-screen claim carries an epistemic tag (**ESTABLISHED**, *
 npm install
 npm run dev          # http://localhost:5173  (development)
 npm run build        # dist/ (static site) and dist/reality.html (single file, no network)
-npm test             # 37 unit tests (numerics, ledger and caption rules, determinism, audio)
+npm test             # 37 tests (numerics, ledger and caption rules, determinism, audio)
 npm run verify       # browser checks → verification/report.md (needs a build)
 ```
 
@@ -87,11 +87,13 @@ playback. The share file is a two-pass 1080p30 H.264 encode sized to about 34 MB
 **Time and disk.** Throughput depends almost entirely on the GPU. Measured here, with no GPU (SwiftShader
 on 4 CPU cores), at 1920×1080, High tier, 1 sub-frame: about 0.5 s per frame for most chapters and 2.5–4 s
 for the ray-marched and ray-traced scenes (the eye, the orbitals, the proton, the black hole) — roughly
-9–12 hours for the whole film. 4K with 8 sub-frames is 32× the pixel work per frame, so it needs a real
+an estimated 10–11 hours for the whole film in one process; measured 5.5 hours with two processes
+sharing the work directory (run the same command twice; segments are claimed with lock files). 4K with 8 sub-frames is 32× the pixel work per frame, so it needs a real
 GPU. Disk: the 1080p CRF 16 file is a few hundred MB; allow ~5 GB for a 4K render's segments.
 
-What was delivered from this environment is described in the final report of the build (see the git
-history): a 1080p render at High tier with one sub-frame per frame, because no GPU was available.
+What was delivered from this environment (no GPU): `reality.mp4` at 1920×1080, 30 fps, High tier, one sample per
+frame, rendered in 5 h 27 min on 4 CPU cores with two cooperating render processes, and `reality_share.mp4`
+(34.5 MB). Details and checks: [`REPORT.md`](REPORT.md) and [`verification/final-render.md`](verification/final-render.md).
 
 ## Project layout
 
